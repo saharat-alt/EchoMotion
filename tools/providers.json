@@ -5,6 +5,18 @@
    "label": "เสียงพากย์ (TTS)",
    "options": [
     {
+     "id": "elevenlabs_mcp",
+     "kind": "mcp",
+     "cost": "paid",
+     "mcp_tools": [
+      "creative_generate_speech",
+      "generate_voiceover",
+      "generate_audio"
+     ],
+     "note": "DEFAULT (user 2026-11-12): ElevenLabs through the Claude connector, no API key. creative_list_voices -> creative_generate_speech (eleven_v4, voice from brand.json voices); estimate_only first and quote credits.",
+     "default": true
+    },
+    {
      "id": "elevenlabs_api",
      "kind": "api",
      "cost": "paid",
@@ -15,18 +27,7 @@
       "~/.config/dataechooo/elevenlabs.env"
      ],
      "run": "python pipelines/tts_elevenlabs.py script.txt out.mp3 --type type2   (voice profiles: brand/brand.json voices)",
-     "note": "one call for the whole script; returns char timing"
-    },
-    {
-     "id": "elevenlabs_mcp",
-     "kind": "mcp",
-     "cost": "paid",
-     "mcp_tools": [
-      "creative_generate_speech",
-      "generate_voiceover",
-      "generate_audio"
-     ],
-     "note": "ElevenLabs/other TTS connectors"
+     "note": "one call for the whole script; returns char timing  Fallback only (user 2026-11-12: use the connector instead of a key)."
     },
     {
      "id": "paxa_api",
@@ -44,6 +45,17 @@
    "label": "ถอดเสียง + เวลาของคำ (ซับ)",
    "options": [
     {
+     "id": "scribe_mcp",
+     "kind": "mcp",
+     "cost": "paid",
+     "mcp_tools": [
+      "creative_transcribe_audio",
+      "transcribe_media"
+     ],
+     "default": true,
+     "note": "DEFAULT (user 2026-11-12): Scribe through the connector. creative_attach_reference_file (the voice take) -> creative_transcribe_audio; per-word start/end in transcripts[].words."
+    },
+    {
      "id": "scribe_api",
      "kind": "api",
      "cost": "paid",
@@ -53,16 +65,8 @@
      "files": [
       "~/.config/dataechooo/elevenlabs.env"
      ],
-     "run": "python pipelines/stt_elevenlabs.py in.mp4 out.json"
-    },
-    {
-     "id": "scribe_mcp",
-     "kind": "mcp",
-     "cost": "paid",
-     "mcp_tools": [
-      "creative_transcribe_audio",
-      "transcribe_media"
-     ]
+     "run": "python pipelines/stt_elevenlabs.py in.mp4 out.json",
+     "note": "Fallback only (user 2026-11-12: use the connector instead of a key)."
     },
     {
      "id": "whisper_local",
@@ -138,6 +142,16 @@
    "label": "เพลงประกอบ",
    "options": [
     {
+     "id": "envato_mcp",
+     "kind": "mcp",
+     "cost": "plan",
+     "default": true,
+     "mcp_tools": [
+      "search_music"
+     ],
+     "note": "DEFAULT (user 2026-11-12): Envato Elements connector. It SEARCHES only (returns elements.envato.com links). The user downloads the chosen track with their own Envato Elements subscription and saves it as library/audio/music/envato_<artist>_<title>.wav. Never commit Envato files."
+    },
+    {
      "id": "artlist_mcp",
      "kind": "mcp",
      "cost": "plan",
@@ -145,7 +159,7 @@
       "search_music",
       "download_track"
      ],
-     "note": "needs the user's own Artlist subscription"
+     "note": "legacy: the 3 baseline finals use Artlist tracks. New jobs use Envato (user 2026-11-12)."
     },
     {
      "id": "elevenlabs_music",
@@ -163,7 +177,7 @@
      "paths": [
       "library/audio/music/*.wav"
      ],
-     "note": "Artlist files: your own account, list via python tools/artlist_check.py"
+     "note": "already downloaded tracks (Envato for new jobs; Artlist for the baselines, see python tools/artlist_check.py)"
     }
    ]
   },
@@ -271,6 +285,38 @@
      ]
     }
    ]
+  },
+  "real_photos": {
+   "label": "รูปจริง (คน สินค้า สถานที่ เหตุการณ์)",
+   "options": [
+    {
+     "id": "wikimedia_commons",
+     "kind": "local",
+     "cost": "free",
+     "python": [],
+     "run": "Commons API search (generator=search, namespace 6, prop=imageinfo with extmetadata) -> take thumburl (1280 px); keep LicenseShortName + Artist for CREDITS.txt",
+     "note": "FIRST choice for real people, companies, products, places. CC BY / CC BY-SA / public domain: credit on screen + CREDITS.txt."
+    },
+    {
+     "id": "official_press",
+     "kind": "mcp",
+     "cost": "free",
+     "mcp_tools": [
+      "WebFetch",
+      "WebSearch"
+     ],
+     "note": "official newsroom / press kit photos and the source article's own images (fair use, REF_SPEC 6): credit on screen."
+    },
+    {
+     "id": "envato_photos_mcp",
+     "kind": "mcp",
+     "cost": "plan",
+     "mcp_tools": [
+      "search_photos"
+     ],
+     "note": "Envato Elements stock (in the subscription, not free per item). Generic scenes only (office, city, servers, money, crowds): no real named people or brands. Search via connector; the user (or Claude in the signed-in browser, after a yes) downloads with their Envato account."
+    }
+   ]
   }
  },
  "bundles": {
@@ -278,11 +324,12 @@
   "type1": {
    "needs": {
     "word_timing_stt": [
-     "scribe_api",
      "scribe_mcp",
+     "scribe_api",
      "whisper_local"
     ],
     "music": [
+     "envato_mcp",
      "library_music",
      "artlist_mcp",
      "elevenlabs_music"
@@ -298,13 +345,13 @@
   "type2": {
    "needs": {
     "voice_tts": [
-     "elevenlabs_api",
      "elevenlabs_mcp",
+     "elevenlabs_api",
      "paxa_api"
     ],
     "word_timing_stt": [
-     "scribe_api",
      "scribe_mcp",
+     "scribe_api",
      "whisper_local"
     ],
     "image_gen": [
@@ -315,8 +362,9 @@
      "library_reuse"
     ],
     "music": [
-     "artlist_mcp",
+     "envato_mcp",
      "library_music",
+     "artlist_mcp",
      "elevenlabs_music"
     ],
     "sfx": [
@@ -328,14 +376,19 @@
      "web_tools",
      "chrome",
      "playwright_local"
+    ],
+    "real_photos": [
+     "wikimedia_commons",
+     "official_press",
+     "envato_photos_mcp"
     ]
    }
   },
   "type3": {
    "needs": {
     "voice_tts": [
-     "elevenlabs_api",
      "elevenlabs_mcp",
+     "elevenlabs_api",
      "paxa_api"
     ],
     "image_gen": [
@@ -346,18 +399,33 @@
      "library_reuse"
     ],
     "music": [
-     "artlist_mcp",
+     "envato_mcp",
      "library_music",
+     "artlist_mcp",
      "elevenlabs_music"
     ],
     "sfx": [
      "artlist_sfx_mcp",
      "library_sfx",
      "earshot_bank"
+    ],
+    "real_photos": [
+     "wikimedia_commons",
+     "official_press",
+     "envato_photos_mcp"
     ]
    }
   },
   "examples": [
+   {
+    "id": "E_codex_elevenlabs_connector_envato",
+    "tools": [
+     "Codex (ChatGPT plan)",
+     "ElevenLabs connector",
+     "Envato Elements connector"
+    ],
+    "covers": "CURRENT setup (user 2026-11-12): Codex images, ElevenLabs connector for voice + word timing only, Envato for music, SFX from this repo's library"
+   },
    {
     "id": "A_elevenlabs_only",
     "tools": [
@@ -390,6 +458,6 @@
     "covers": "voice from ElevenLabs; plates/cast/music/SFX reused from this repo's library"
    }
   ],
-  "owner_rule": "Data Echooo owner (2026-11-12): ElevenLabs = voice only; images via Codex CLI. Do not route the owner's images to ElevenLabs unless they change this rule."
+  "owner_rule": "Data Echooo (user 2026-11-12): ElevenLabs = voice + word timing only, through the Claude connector (no API key). Images = Codex CLI. Music = Envato Elements (connector search, user downloads with their own account). SFX = this repo's library. Earlier rule: ElevenLabs voice only, Artlist audio."
  }
 }

@@ -27,6 +27,7 @@ window.setup = async (data) => {
   logo = await DE.loadImage(J('brand:logo/DataEchooo-logo.png'));
   cap = new DE.Captions(document.body, D.captions, { y: D.capY || 1400, size: 60, maxWidth: 960 });
   await loadLayered(D.shots);
+  for (const s of D.shots) for (const ph of s.photos || []) if (!PIMG[ph.img]) PIMG[ph.img] = await DE.loadImage(J(ph.img));
 };
 
 // keyed actor state: keys [{t, pose, face, x, y, look, dir, walk}] -> state at t (step for pose/face, eased for x/y)
@@ -266,6 +267,36 @@ function pill(t) {  // tension device (top): money runway
   g.restore();
 }
 
+// ---------- real photo as proof (user 2026-11-12: "use real photos too"; ref "photos as proof", REF_TYPE3_SHOTS) ----------
+// shot.photos = [{ img (job path), at, until?, x, y (centre, screen px), w, h? (default 4:3 of w), rot? (rad, small tilt),
+//                  focus? [fx,fy] 0..1 crop centre, label? (name under the photo), credit? (source, always on screen),
+//                  ring? {x,y,r} (0..1 of the photo: marker circle drawn around a face/detail), backdrop? (dim the scene) }]
+// Calm entrance (REF_SPEC 15): rises 60 px + fades over 0.45 s, no spin/bounce. Cue: shutter (engine/cues.py story).
+const PIMG = {};
+function photo(o, t) {
+  if (t < o.at || (o.until !== undefined && t > o.until)) return;
+  const im = PIMG[o.img]; if (!im) return;
+  const k = E(clamp((t - o.at) / 0.45)), w = o.w || 640, h = o.h || Math.round(w * 0.75), pad = 22, bot = o.label && o.credit ? 116 : o.label || o.credit ? 80 : pad;
+  if (o.backdrop) { g.save(); g.globalAlpha = 0.45 * k; g.fillStyle = '#0E1A4D'; g.fillRect(0, 0, W, H); g.restore(); }
+  g.save(); g.globalAlpha = k; g.translate(o.x, o.y + 60 * (1 - k)); g.rotate(o.rot ?? -0.035);
+  const fw = w + pad * 2, fh = h + pad + bot;
+  g.shadowColor = 'rgba(14,26,77,.32)'; g.shadowBlur = 36; g.shadowOffsetY = 14;
+  g.fillStyle = '#fff'; g.fillRect(-fw / 2, -fh / 2, fw, fh); g.shadowColor = 'transparent';
+  // cover-fit crop around focus
+  const [fx, fy] = o.focus || [0.5, 0.5], s = Math.max(w / im.width, h / im.height), sw = w / s, sh = h / s;
+  const sx = clamp(im.width * fx - sw / 2, 0, im.width - sw), sy = clamp(im.height * fy - sh / 2, 0, im.height - sh);
+  const ix = -fw / 2 + pad, iy = -fh / 2 + pad;
+  g.drawImage(im, sx, sy, sw, sh, ix, iy, w, h);
+  if (o.ring) {  // marker circle drawn on after the photo lands
+    const rk = clamp((t - o.at - 0.5) / 0.5); if (rk > 0) {
+      g.strokeStyle = ORANGE; g.lineWidth = 9; g.lineCap = 'round';
+      g.beginPath(); g.ellipse(ix + o.ring.x * w, iy + o.ring.y * h, o.ring.r * w, o.ring.r * w * 1.1, -0.2, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2.1 * E(rk)); g.stroke(); } }
+  g.textBaseline = 'middle';
+  if (o.label) { g.textAlign = 'left'; g.font = "900 38px DEHead"; g.fillStyle = BLUE; g.fillText(o.label, ix + 4, iy + h + 44); }
+  if (o.credit) { g.textAlign = 'right'; g.font = "600 22px DEBody"; g.fillStyle = '#7A84A6'; g.fillText(o.credit, ix + w - 2, iy + h + (o.label ? 88 : 44)); }
+  g.restore();
+}
+
 // ---------- shot types (ref audit docs/REF_TYPE3_AUDIT.md); transitions live in renderAt below ----------
 //   shot.rewind: flashback with a rolling year counter; shot.card.title: chapter title; links: diagram line.
 
@@ -364,6 +395,7 @@ function drawLayered(s, t) {
   g.fillStyle = vg; g.fillRect(0, 0, W, H);
   if (s.chip) chip(s.chip, t);
   for (const o of s.counters || []) counter(o, t);
+  for (const o of s.photos || []) photo(o, t);
 }
 
 function drawShot(s, t) {  // draws one shot at time t into the current g
@@ -395,6 +427,7 @@ function drawShot(s, t) {  // draws one shot at time t into the current g
   if (s.chip) chip(s.chip, t);
   for (const o of s.tags || []) tag(o, t, cam);
   for (const o of s.counters || []) counter(o, t);
+  for (const o of s.photos || []) photo(o, t);
 }
 
 // ---------- transitions: gl-transitions (MIT) via engine/web/gltrans.js (user-approved 2026-11-12) ----------

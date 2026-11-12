@@ -158,6 +158,15 @@
   "voices": {
     "_note": "Narration voices. Add the team's own ElevenLabs voice as a profile and point by_type at it. pipelines/tts_elevenlabs.py --voice takes a profile name (or a raw voice id).",
     "profiles": {
+      "safe": {
+        "provider": "elevenlabs",
+        "voice_id": "DMKLUh0ZCBM4EXh5Kggs",
+        "model": "eleven_v4",
+        "speed": 1.0,
+        "stability": 0.5,
+        "name": "Safe",
+        "note": "คุณเซฟ's own cloned voice (ElevenLabs, Thai, male). Default for every type since 2026-11-12 (user). Approve a short sample on the first job and keep that take as the reference (REF_SPEC 26)."
+      },
       "aidan": {
         "provider": "elevenlabs",
         "voice_id": "EOVAuWqgSZN2Oel78Psj",
@@ -165,12 +174,14 @@
         "speed": 1.0,
         "stability": 0.5,
         "name": "Aidan - Social Media Influencer",
-        "approved": "2026-11-12, finals of type 2 and type 3"
+        "approved": "2026-11-12, finals of type 2 and type 3",
+        "note": "baselines only (the 3 finals in deliverables/ were voiced by Aidan); new jobs use safe"
       }
     },
     "by_type": {
-      "type2": "aidan",
-      "type3": "aidan"
+      "type1": "safe",
+      "type2": "safe",
+      "type3": "safe"
     }
   }
 }

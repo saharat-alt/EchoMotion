@@ -4,9 +4,9 @@
 
 | แนว | คืออะไร | คลิปมาตรฐาน (เป้าคุณภาพ) |
 |---|---|---|
-| 1 คนพูด | ตัดต่อคลิปคุณเซฟพูดหน้ากล้อง แบ่งจอบน-ล่าง ภาพแทรกของจริงขยับตรงคำ | `deliverables/type1_talkinghead_forsample_v3.mp4` |
-| 2 ข่าว AI | เสียงพากย์ + มาสคอต + กระดาษคอลลาจ ข่าวก่อน แล้ว 3 ไอเดีย แล้ว CTA | `deliverables/type2_news_fable52_v8.mp4` |
-| 3 เล่าเรื่อง | แอนิเมชันเล่าเรื่องธุรกิจ/AI/ชีวประวัติ แบบ 2.5D | `deliverables/type3_story_nvidia_p1_v3.mp4` |
+| 1 เซฟพูด | ตัดต่อคลิปคุณเซฟพูดหน้ากล้อง แบ่งจอบน-ล่าง ภาพแทรกของจริงขยับตรงคำ | `deliverables/type1_talkinghead_forsample_v3.mp4` |
+| 2 เล่าข่าว | เสียงพากย์ + มาสคอต + กระดาษคอลลาจ ข่าวก่อน แล้ว 3 ไอเดีย แล้ว CTA | `deliverables/type2_news_fable52_v8.mp4` |
+| 3 เล่า Business | แอนิเมชันเล่าเรื่องธุรกิจ/AI/ชีวประวัติ แบบ 2.5D | `deliverables/type3_story_nvidia_p1_v3.mp4` |
 
 **เริ่มที่นี่:** สกิลหลักอยู่ที่ `.claude/skills/de-video/SKILL.md` (Claude Code โหลดให้เองเมื่อเปิดโฟลเดอร์นี้)
 กฎทุกข้อที่ตกลงกับเจ้าของพร้อมเหตุผลอยู่ที่ `docs/REF_SPEC.md` ส่วนการแตกเรฟแนว 3 อยู่ที่ `docs/REF_TYPE3_AUDIT.md` และ `docs/REF_TYPE3_SHOTS.md`

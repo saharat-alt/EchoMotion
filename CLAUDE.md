@@ -3,6 +3,10 @@
 Read `.claude/skills/de-video/SKILL.md` before any clip work, and `docs/REF_SPEC.md` before any edit or review.
 They hold every rule agreed with the Data Echooo owner, with the reason. These rules here are how to work with the team.
 
+## Clip type names (user, 2026-11-12)
+Call the three types by these names when talking with the team: type1 = **เซฟพูด**, type2 = **เล่าข่าว**, type3 = **เล่า Business**.
+The ids `type1|type2|type3` and folder/file names (`jobs/type1_talkinghead/...`, `deliverables/type2_news_...`) stay as they are: scripts use them.
+
 ## Talk
 - Reply in Thai. Keep file names, tool names and commands as they are.
 - Before generating a voice or a whole clip, agree the script, the hook (first 5 s) and the plan with the user first.
@@ -10,8 +14,10 @@ They hold every rule agreed with the Data Echooo owner, with the reason. These r
 
 ## Money and accounts
 - Anything that costs per use (ElevenLabs, image/video APIs, paid MCP tools): say what it is and the price, wait for a yes.
-- Default routing (owner rule 2026-11-12): ElevenLabs = voice + word timing only, never images or video.
-  Images = Codex CLI (`tools/run_codex.py`, inside a ChatGPT plan). Music/SFX = Artlist or `library/audio`.
+- Default routing (user rule 2026-11-12, updated): ElevenLabs = voice + word timing only, never images or video,
+  and always through the **ElevenLabs connector in Claude** (`creative_generate_speech`, `creative_transcribe_audio`), not an API key.
+  Images = Codex CLI (`tools/run_codex.py`, inside a ChatGPT plan). Music = **Envato Elements** (connector `search_music`
+  finds tracks; the user downloads with their own Envato account into `library/audio/music/`). SFX = `library/audio`.
 - Never print, read aloud or commit an API key. Keys live in `~/.config/dataechooo/` only.
 
 ## Machine
@@ -32,4 +38,4 @@ so the next session and the next teammate start from the agreed state.
 
 ## Finishing a clip
 `python tools/finalize_job.py <job> <final.mp4>` (dry run, show the list, then `--yes`). Commit only what the final
-needs: no drafts, no renders in `out/`, no Artlist files, no third-party raw media, no keys. Branch per job, then a PR.
+needs: no drafts, no renders in `out/`, no Artlist or Envato files, no third-party raw media, no keys. Branch per job, then a PR.

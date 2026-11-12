@@ -1,6 +1,6 @@
 ---
 name: de-video
-description: Make Data Echooo vertical videos (9:16 Thai) - talking-head edit (type 1), AI news with the mascot (type 2), animated storytelling (type 3: business / AI / solopreneur / biography). Use for any Data Echooo clip, script, caption, voice, music, SFX, mascot, background, render or review task in this repo.
+description: Make Data Echooo vertical videos (9:16 Thai) - "เซฟพูด" talking-head edit (type 1), "เล่าข่าว" AI news with the mascot (type 2), "เล่า Business" animated storytelling (type 3: business / AI / solopreneur / biography). Use for any Data Echooo clip, script, caption, voice, music, SFX, mascot, background, render or review task in this repo.
 ---
 
 # Data Echooo video pipeline (current state: 2026-11-12)
@@ -10,9 +10,9 @@ This file is the how. `docs/REF_SPEC.md` has every user review rule, numbered wi
 The user's own words win over this file. When they correct something, update this file and REF_SPEC in the same turn.
 
 ## Baseline (user, 2026-11-12): these three finals are the target for every new clip of their type
-- Type 1: `deliverables/type1_talkinghead_forsample_v3.mp4` (job jobs/type1_talkinghead/2026-11-12_th_sample, plan_v3.py)
-- Type 2: `deliverables/type2_news_fable52_v8.mp4` (job jobs/type2_news/2026-11-12_news_fable52, plan_v8.json)
-- Type 3: `deliverables/type3_story_nvidia_p1_v3.mp4` (job jobs/type3_story/2026-11-12_story_nvidia, part1_scene_v3.py)
+- Type 1 (เซฟพูด): `deliverables/type1_talkinghead_forsample_v3.mp4` (job jobs/type1_talkinghead/2026-11-12_th_sample, plan_v3.py)
+- Type 2 (เล่าข่าว): `deliverables/type2_news_fable52_v8.mp4` (job jobs/type2_news/2026-11-12_news_fable52, plan_v8.json)
+- Type 3 (เล่า Business): `deliverables/type3_story_nvidia_p1_v3.mp4` (job jobs/type3_story/2026-11-12_story_nvidia, part1_scene_v3.py)
 New clips start by copying the baseline job's pipeline and must be at least this good; the refs (refs/type1, AIพูด, refs/type3_yt) stay the direction to grow toward
 (type 3 next step: ref-style layered art, see REF_TYPE3_AUDIT "Layer anatomy").
 
@@ -42,6 +42,18 @@ safe zones, caption rules, sound roles and levels. Assets are swappable and must
   exact recipe of each final (music start, levels, cue set, clip cuts); a new clip copies that recipe.
 - If something fails on a new machine, fix the repo (script, doc, requirements) so the next person does not hit it.
 
+## Current default routing (user, 2026-11-12, replaces Artlist + ElevenLabs API key)
+- **Voice + word timing = ElevenLabs connector** (Claude MCP), no API key: `creative_list_voices` → `creative_generate_speech`
+  (profile from brand.json `voices`, `eleven_v4`; run with `estimate_only` first and quote the credits) →
+  `creative_attach_reference_file` on the chosen take → `creative_transcribe_audio` (per-word start/end in `transcripts[].words`).
+  Save the take as the job's voice file and the words as its timing JSON, the same shape `pipelines/stt_elevenlabs.py` writes.
+  `pipelines/tts_elevenlabs.py` / `stt_elevenlabs.py` (API key) are fallback only.
+- **Music = Envato Elements connector** (`search_music`, filters: no vocals, mood, tempo, length). It only searches and returns
+  elements.envato.com links: show the user 3–5 candidates, they download the pick with their OWN Envato Elements account and save it as
+  `library/audio/music/envato_<artist>_<title>.wav`. Then measure steadiness / rank as in §2. Never commit Envato files.
+- The three baseline finals keep their Artlist tracks (rebuild only); new jobs use Envato.
+- SFX unchanged: the repo library (`library/audio/sfx`, `foley`, `sfx_elevenlabs`).
+
 ## Provider routing: scan, then offer (works on any machine; user rule 2026-11-12)
 Never hard-wire one provider. At the start of a job (or when a step needs voice, timing, images, music or SFX):
 1. Run `python tools/capabilities.py`. It checks API keys (presence only, never values), CLIs (codex, ffmpeg, earshot),
@@ -54,17 +66,18 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
    Codex task, an API prompt or an MCP prompt. Save outputs to the job's `assets/` the same way whatever made them.
 5. Remember the user's choice per capability in the job folder (`providers_chosen.json`) and reuse it for the rest of the job.
 6. Prefer the bundle that finishes the whole type with the FEWEST tools: `python tools/capabilities.py type2` lists, per needed
-   capability, what works here; `tools/providers.json` → `bundles.examples` (A: ElevenLabs only; B: ElevenLabs + Artlist;
-   C: Codex + ElevenLabs + Artlist = owner's setup; D: ElevenLabs + this repo's library). If the user has Artlist or the
+   capability, what works here; `tools/providers.json` → `bundles.examples` (E: Codex + ElevenLabs connector + Envato = CURRENT
+   setup; A: ElevenLabs only; B: ElevenLabs + Artlist; C: Codex + ElevenLabs + Artlist = earlier setup; D: ElevenLabs + this repo's library). If the user has Artlist or the
    library covers it, music/SFX need no generation. Owner rule still applies to the owner: ElevenLabs = voice only, images = Codex.
 7. Artlist files are NOT in the repo (licence). `library/audio/ARTLIST_MANIFEST.md` lists every track/SFX used; a teammate
    downloads them with their own Artlist account into the same paths.
 
 ## 0. Ground rules (all types)
 - **Paid services.**
-  - ElevenLabs: voice only (TTS + Scribe timing). Music/SFX there were approved once. Never images or video.
+  - ElevenLabs: voice only (TTS + Scribe timing), through the Claude connector (user 2026-11-12). Music/SFX there were approved once. Never images or video.
   - Images: Codex CLI inside the ChatGPT plan: `python tools/run_codex.py docs/prompts/<brief>.md <job-name>` (briefs in `docs/prompts/`).
-  - Music + SFX: Artlist (`download_track` records the licence). The baseline set: `library/audio/artlist_manifest.json` (Artlist ID + path; add every new Artlist file there). SFX: commit new ones to library/audio/sfx or foley. Music: download only with the current user's own Artlist account, never commit it.
+  - Music (new jobs, user 2026-11-12): Envato Elements, downloaded by the user with their own account; never commit it.
+  - Baseline music + SFX: Artlist (`download_track` records the licence). The baseline set: `library/audio/artlist_manifest.json` (Artlist ID + path; add every new Artlist file there). SFX: commit new ones to library/audio/sfx or foley. Music: download only with the current user's own Artlist account, never commit it.
   - Thai TTS alternative: Paxa Labs (optional, outside this repo; needs its own script + key). Default is the ElevenLabs profile in brand.json.
   - Anything new that costs money: quote the price and ask first. Report what was spent.
 - **Brand CI.** Colours only from `brand/brand.json` / `DE.color`:
@@ -83,17 +96,26 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
   - Ideas: from any repo, NonCommercial included.
 
 ## 1. Voice
-- Profiles live in `brand/brand.json` → `voices` (swap there). Current: type 2 + 3 = ElevenLabs **Aidan - Social Media Influencer** `EOVAuWqgSZN2Oel78Psj`, `eleven_v4`.
+- Profiles live in `brand/brand.json` → `voices` (swap there). **Current (user 2026-11-12): every type = ElevenLabs "Safe"**
+  `DMKLUh0ZCBM4EXh5Kggs` (คุณเซฟ's own cloned Thai voice), `eleven_v4`, through the connector (`creative_generate_speech`
+  with that voice_id; never pick a library voice). เซฟพูด uses his real recording; the clone is only for pickups/fixes there.
+  - First job with Safe: make a short sample, get the user's OK, keep it as the reference take for pitch/tone (REF_SPEC 26).
+  - Aidan `EOVAuWqgSZN2Oel78Psj` voiced the three baseline finals; keep the profile for rebuilds only.
   - Scribe: attach the chosen take URL with `creative_attach_reference_file`, then transcribe that node. A speech node gives its FIRST take.
   - `engine/tighten.py` trims pauses (>0.28 s to 0.18 s, tempo 1.1).
-- Type 3: same Aidan profile since 2026-11-12 (Paxa ran out of credits; user: "use the same voice as type 2"). Whole script in one call;
+- Type 3: same profile as type 2 (was Aidan, now Safe; Paxa ran out of credits; user: "use the same voice as type 2"). Whole script in one call;
   ElevenLabs returns character timing, so no Scribe pass. Paxa khaotom stays an option (`paxa_api` in providers.json).
   - Rejected: mooping/satay/kaprao at default settings ("tired, odd, not funny").
+- **English words in a Thai accent (user 2026-11-12):** the voice says English the way คุณเซฟ does, not with an English accent.
+  The `tts:` line spells every English word, name, number and symbol in Thai (คล็อด, เอ็นวิเดีย, เอไอ, สี่สิบดอลลาร์);
+  the `caption:` line keeps the English spelling. Run `python tools/th_say.py <tts.txt> --out spoken.txt` before any TTS:
+  it applies `brand/pronunciation_th.json` and exits 1 listing anything still not Thai. Add each new word to that file
+  (one place for the whole team), and let the user correct a spelling once on the sample, then keep it there.
 - Script tone: natural spoken Thai, never narrate the structure (no "ข่าวครบแล้ว…"). The user approves the script before any TTS.
 
 ## 2. Sound
 - **Music:** instrumental, fun and tight, **steady loudness** (1 s loudness std ≤ ~1.5 dB). NOT airy or corporate ("ฟังแล้วง่วง").
-  - Find on Artlist, rank with earshot, measure steadiness, and let the user pick when it's a new format.
+  - Find on Envato Elements (connector `search_music`; user downloads, see "Current default routing"), rank with earshot, measure steadiness, and let the user pick when it's a new format.
   - Type 2: Ariel Shalom "Groove Express" from 0:42.
   - Type 3: light instrumental underscore with NO heavy beat, like the ref (user 2026-11-12). Particels (pizzicato, childlike) was rejected; funk/hip-hop beds are for type 2 only. Pick: Dor Ben Lulu "Moments Apart" from 0:29 (closest to the ref by earshot), mixed VERY quiet (`--music-db -24 --duck-db -6`). Transitions approved by the user: gl-transitions (MIT) Directional + real motion blur (sub-frame average) for place changes, CrossZoom for zoom punch, Overexposure for white flash; plain cut on phrase starts everywhere else.
 - **SFX:** real Artlist recordings in `library/audio/sfx/` (LICENSE.txt maps role → title). Roles:
@@ -120,7 +142,7 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
 - Pages: `window.setup(data)` + deterministic `window.renderAt(t)`. Reset canvas state (textAlign, shadows, dash) every frame. Video inside pages must be WebM/VP9.
 - QA: contact sheet + `blackdetect` + frames around every transition. Never claim done without looking.
 
-## 4. Type 2: AI news (paper collage, mascot host)
+## 4. Type 2 — เล่าข่าว: AI news (paper collage, mascot host)
 1. **Order: report the news fully first** (source wording: "with human guidance", "about", "earlier version"…).
    - Then a natural bridge (user's line: "ลองมาดูสามไอเดียที่น่าสนใจสำหรับ … กันบ้าง").
    - Then 3 ideas, each tied to a strength + a number. Then the CTA.
@@ -130,12 +152,15 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
    - Calm entrances (rise ~60 px + fade 0.45 s; no spin, no bounce).
    - One minimal Codex plate per beat in a locked CI collage style + a hairline grid (1 px, rgba(33,74,255,.06)), brightness 100%.
    - Take the Vox-like rhythm, never copy the ref's look.
+   - **Real photos too (user 2026-11-12):** not only screenshots and text. Each section gets at least one real photo
+     (the person who said it, the product, the event, the company) as a `photo` piece, in natural colour so it reads as real
+     (halftone only for decorative cut-outs), credit on screen + CREDITS.txt. Sources: `real_photos` in providers.json.
 4. **Mascot** (`DE.Mascot`): type 2 only.
    - A bust pinned to the bottom edge; moves to centre as host at section changes.
    - Lip-sync from RMS, blink, poses/emotes. Never covers the face of a speaker or the key insert; never floats mid-frame.
 5. Current job: `jobs/type2_news/2026-11-12_news_fable52` (plan_v8.json + splice_v8.json → deliverables/type2_news_fable52_v8.mp4).
 
-## 5. Type 3: animated story (our CI, the ref's format)
+## 5. Type 3 — เล่า Business: animated story (our CI, the ref's format)
 - **Ref:** `refs/type3_yt` (not in git: https://www.youtube.com/watch?v=_MG4v3foET8, "How a Chinese Spy Got Inside Nvidia", Paper Billions; the audit docs hold what we took from it). Take its format, pacing and transitions (REF_TYPE3_AUDIT). Do **not** take its dark mood.
   - Ours is bright Data Echooo: ice-white sets, cobalt main colour, sky/teal accents, one orange touch.
   - White pills with blue text, brand-blue name tags with leader lines, small colour logo bug.
@@ -145,6 +170,15 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
 - **Page:** `engine/pages/story2d.html`. Shot fields:
   - `plate`, `cam{z,x,y}`, `actors[keys]`, `props` (dish, tray, napkin, box, contract, check, chip, crowd), `fg` occluder
   - `chip`, `tags`, `counters`, `links`
+  - `photos` = **real photo as proof** (user 2026-11-12: "use real photos too"): white-bordered print that rises + fades in
+    with a shutter cue; fields `img, at, until, x, y, w, h, rot, focus[fx,fy], label, credit, ring{x,y,r}, backdrop`.
+    - Use on the key beats: a real person when first named, the real company/building, the real product, a headline or
+      document behind a number. About 1 photo every 3–5 shots; cartoon cast and sets stay the main look.
+    - Compose it: the photo sits in free space beside the cast (never over a face), and it replaces what it repeats: if the
+      photo has a `label`, drop the name `tag` for that person (rule 7: never say the same thing twice).
+    - Portraits for people (check the face is in the crop: `focus`); `ring` only when there is a real detail to point at.
+    - `credit` is always on screen; licence + author go in the job's CREDITS.txt. Sources: `real_photos` in providers.json
+      (Wikimedia Commons first; official press / source article; Envato Elements for generic scenes only).
   - `card` (`lines` or `title`), `rewind`, `cta`, `in:"whip"`, `out:"punch"`
   - `pill` = top tension device
 - **Cutting (audit):**
@@ -158,7 +192,7 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
   - Scene: `part1_scene_v3.py` writes `scene.json` + `music_mute.txt`
   - Then `engine/cues.py story` → `render_par` → `mix --music-mute` (all of it: `python tools/rebuild.py type3`)
 
-## 6. Type 1: talking head (คุณเซฟ)
+## 6. Type 1 — เซฟพูด: talking head (คุณเซฟ)
 - Refs `refs/type1/ref01.mp4`, `ref02.mp4` (client files, not in git; what they do is written below). Baseline footage: the forsample test clip (`input/footage.mp4`, already captioned, SD 360x640). Ask for raw footage before judging cut quality.
 - What the refs do (audited 2026-11-12 at 5 fps):
   - split top/bottom: the speaker is cropped into one half, the face is never covered

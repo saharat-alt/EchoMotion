@@ -56,6 +56,9 @@ elif kind == "story":
         if s.get("rewind"): cues.append({"t": s["t0"], "sfx": "rewind", "db": -15})
         if s.get("cta"): cues.append({"t": s["t0"] + 0.45, "sfx": "chime", "db": -19})
         for tg in s.get("tags", []): cues.append({"t": tg["at"] + 0.05, "sfx": "pop", "db": -24})
+        for ph in s.get("photos", []):  # real photo as proof lands with a camera shutter (ref 0:17)
+            cues.append({"t": ph["at"], "sfx": "shutter", "db": -20})
+            if ph.get("ring"): cues.append({"t": ph["at"] + 0.5, "sfx": "pen", "db": -21})
         for lk in s.get("links", []):
             cues.append({"t": lk["at"], "sfx": "pen", "db": -21})
             if lk.get("breakAt"): cues.append({"t": lk["breakAt"], "sfx": "swish_paper", "db": -17, "dur": 0.5})
