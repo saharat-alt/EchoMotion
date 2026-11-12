@@ -10,6 +10,7 @@ On "final" a clip's job folder keeps only what is needed to rebuild it (see `too
 | artlist_francesco-dandrea_particels.wav | playful pizzicato, childlike (rejected for type 3) | - | from 0:28 |
 | artlist_liam-mansfield_a-little-curious.wav | light curious underscore, no heavy beat, very steady | - | from 0:38 |
 | artlist_dor-ben-lulu_moments-apart.wav | soft ambient underscore, almost no beat; closest to the type 3 ref (earshot cos 0.44) | type3 story_nvidia | from 0:29; play VERY quiet |
+| incompetech_kevin-macleod_investigations.mp3 | light pizzicato investigative underscore, orchestral (1 s loudness std 3.5 dB: not very steady). FREE, CC BY 4.0: credit "Investigations" Kevin MacLeod (incompetech.com) in the post caption; committed | type3 jensen_affair_impact | 0:00-83.4 loops into 0:00 (track goes quiet at 83.5 s); play VERY quiet (-24) |
 
 Cut a bed per clip into the job's `input/` (`ffmpeg -ss <start> -t <dur> -i <track> -af afade=t=in:d=0.25 music_bed.wav`).
 

@@ -48,6 +48,7 @@ safe zones, caption rules, sound roles and levels. Assets are swappable and must
   `creative_attach_reference_file` on the chosen take → `creative_transcribe_audio` (per-word start/end in `transcripts[].words`).
   Save the take as the job's voice file and the words as its timing JSON, the same shape `pipelines/stt_elevenlabs.py` writes.
   `pipelines/tts_elevenlabs.py` / `stt_elevenlabs.py` (API key) are fallback only.
+- **Free music is allowed (user 2026-11-12, REF_SPEC 32):** if Envato is not at hand, use a free licensed track (incompetech CC BY with credit worked); never a "Content ID Registered" track (Pixabay). The ElevenLabs connector makes no music.
 - **Music = Envato Elements connector** (`search_music`, filters: no vocals, mood, tempo, length). It only searches and returns
   elements.envato.com links: show the user 3–5 candidates, they download the pick with their OWN Envato Elements account and save it as
   `library/audio/music/envato_<artist>_<title>.wav`. Then measure steadiness / rank as in §2. Never commit Envato files.
@@ -213,6 +214,7 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
 - Jobs by type: `jobs/type1_talkinghead/`, `jobs/type2_news/`, `jobs/type3_story/` → `<YYYY-MM-DD>_<slug>/` (input/, assets/, out/, scripts, scene/plan files).
 - Shared sounds live in `library/audio/` (music = full licensed tracks with a mood table in `library/README.md`; sfx = Artlist roles; sfx_elevenlabs = older ElevenLabs set, the only SFX in the repo without Artlist). Every new licensed/generated music or SFX goes there, never only inside a job. Add a row to library/README.md.
 - Mixer: `--sfx-dir library/audio/sfx`. Music level default −15 dB / duck −6 dB (user: v7 music was too loud at −12/−4).
+- **Finals folder (user 2026-11-12, REF_SPEC 33):** `deliverables/<type>_<slug>_final/` with only the final mp4 + cover png; post caption stays in the job.
 - **When the user calls a clip final:** `python tools/finalize_job.py <job> <final.mp4>` (dry run) → show the list → run with `--yes`. It deletes unused drafts, renders, stills, QA sheets, stems, old plan/scene versions and voice test takes; keeps the final, its picture, the newest plan/scene/cues, scripts and input/.
 - Paxa voice consistency: generate the whole script in ONE call (per-line calls at temperature 0.7 drift: pitch 107-152 Hz vs the approved 182 Hz sample, user heard "not the voice I chose"). Check median pitch against the approved sample before building.
 - ElevenLabs by API key (user, 2026-11-12, after Paxa ran out of credits): key in `~/.config/dataechooo/elevenlabs.env` (`ELEVENLABS_API_KEY=`; never read it aloud, print it or commit it). `python pipelines/tts_elevenlabs.py script.txt out.mp3 --voice <id>` voices the WHOLE script in one call and writes per-character timing (out.json), so no Scribe pass.

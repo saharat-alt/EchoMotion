@@ -1,0 +1,18 @@
+เล่า Business: Jensen Huang / NVIDIA (2026-11-12)
+
+Voice: ElevenLabs, cloned voice "Safe" (คุณเซฟ), eleven_v4, via the Claude connector.
+Music: "Investigations" by Kevin MacLeod (incompetech.com). Licensed under Creative Commons: By Attribution 4.0
+  http://creativecommons.org/licenses/by/4.0/  (file: library/audio/music/incompetech_kevin-macleod_investigations.mp3)
+SFX: repo library (library/audio/sfx, library/audio/foley; see LICENSE.txt there).
+Plates: Codex CLI (ChatGPT plan), brief docs/prompts/codex_type3_plates_jensen_affair.md; 6 reused from the NVIDIA baseline job.
+
+Photos (shown with an on-screen credit):
+- Jensen Huang at Stanford CS 153, 30 Apr 2026: "Jensen huang stanford 2026-04-30 010.jpg" and "...007.jpg", Anderseidesvik,
+  Wikimedia Commons, CC BY-SA 4.0
+- "NVIDIA Headquarters.jpg", Coolcaesar, Wikimedia Commons, CC BY-SA 4.0
+- "Capitol Building Full View.jpg", Noclip, Wikimedia Commons, public domain
+Logos (official files, unaltered, Wikimedia Commons): Intel logo (2020, dark blue) (public domain); McDonald's Golden Arches
+  (public domain); NVIDIA logo (Apache 2.0); The New York Times logo (public domain).
+
+News sources: see the fact tables in script_v2.md (NYT via TechCrunch/CNN/NBC/CBS/CNBC, NVIDIA board statement
+8 Nov 2026, Yahoo Finance live, France24, Cline/Walkling/Yore 2015 via Fortune).

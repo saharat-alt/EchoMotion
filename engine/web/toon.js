@@ -166,4 +166,12 @@ TOON.cast = {
   curtis: { skin: '#F4D2B0', hair: { style: 'bald', color: '#8A6A4A' }, glasses: 'round', beard: '#8A6A4A', top: { color: '#7A3B2E', kind: 'coat', accent: '#FFF8EC' }, legs: '#2B2F45', seed: 3 },
   sega: { skin: '#F1C9A0', hair: { style: 'grey', color: '#BFC4CC' }, glasses: 'square', top: { color: '#1E2A4A', kind: 'coat', accent: '#FFFFFF' }, legs: '#1A1F33', seed: 4 },
   staff: { skin: '#E9BE93', hair: { style: 'short', color: '#3A2A1E' }, top: { color: '#5A6378', kind: 'coat', accent: '#FFF8EC' }, legs: '#2B2F45', seed: 5 },
+  // 2026-11 (job jensen_affair_impact): Jensen today = grey hair, square glasses, black leather jacket (Commons photos 2026-04)
+  jensen26: { skin: '#F1C79C', hair: { style: 'grey', color: '#C9CDD4' }, glasses: 'square', top: { color: DE.color.ink, kind: 'jacket', accent: '#3A3F55' }, legs: '#1A1F33', seed: 1 },
+  board1: { skin: '#F4D2B0', hair: { style: 'grey', color: '#BFC4CC' }, glasses: 'round', top: { color: '#1E2A4A', kind: 'coat', accent: '#FFFFFF' }, legs: '#1A1F33', seed: 6 },
+  board2: { skin: '#E2B48C', hair: { style: 'bob', color: '#3A2A1E' }, top: { color: '#2E6B5E', kind: 'coat', accent: '#FFF8EC' }, legs: '#2B2F45', seed: 7 },
+  board3: { skin: '#C99A72', hair: { style: 'bald', color: '#3A2A1E' }, beard: '#3A2A1E', top: { color: '#5A6378', kind: 'coat', accent: '#FFFFFF' }, legs: '#2B2F45', seed: 8 },
+  analyst: { skin: '#F4CDA8', hair: { style: 'curly', color: '#6B4A2E' }, glasses: 'square', top: { color: DE.color.blue, kind: 'coat', accent: '#FFFFFF' }, legs: '#22263A', seed: 9 },
+  lawmaker: { skin: '#F1C9A0', hair: { style: 'grey', color: '#D8DBE0' }, top: { color: '#1E2A4A', kind: 'coat', accent: '#FE4C1C' }, legs: '#1A1F33', seed: 10 },
+  worker: { skin: '#E9BE93', hair: { style: 'bob', color: '#1E1E24' }, top: { color: '#7A3B2E', kind: 'jacket', accent: '#FFF8EC' }, legs: '#2B2F45', seed: 11 },
 };
