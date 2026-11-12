@@ -117,7 +117,12 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
 ## 2. Sound
 - **Music:** instrumental, fun and tight, **steady loudness** (1 s loudness std ≤ ~1.5 dB). NOT airy or corporate ("ฟังแล้วง่วง").
   - Find on Envato Elements (connector `search_music`; user downloads, see "Current default routing"), rank with earshot, measure steadiness, and let the user pick when it's a new format.
-  - Type 2: Ariel Shalom "Groove Express" from 0:42.
+  - **House tracks for new jobs (Envato, licensed to project "Data Echooo", downloaded 2026-11-12; list in `library/audio/ENVATO_MANIFEST.md`):**
+    - เล่าข่าว: RedLionProduction "Funk" `envato_redlionproduction_funk.wav` (120 BPM, 1 s std 0.73 dB)
+    - เล่า Business: FlorewsMusic "For Documentaries" `envato_florewsmusic_for-documentaries.wav` (90 BPM, 1.80 dB, mix very quiet like type 3)
+    - เซฟพูด: Denisdrummer85 "Curious" `envato_denisdrummer85_curious.wav` (105 BPM, 2.14 dB)
+    - Not yet checked by ear (earshot not installed): the user listens on the first job and can swap.
+  - Type 2 baseline: Ariel Shalom "Groove Express" from 0:42.
   - Type 3: light instrumental underscore with NO heavy beat, like the ref (user 2026-11-12). Particels (pizzicato, childlike) was rejected; funk/hip-hop beds are for type 2 only. Pick: Dor Ben Lulu "Moments Apart" from 0:29 (closest to the ref by earshot), mixed VERY quiet (`--music-db -24 --duck-db -6`). Transitions approved by the user: gl-transitions (MIT) Directional + real motion blur (sub-frame average) for place changes, CrossZoom for zoom punch, Overexposure for white flash; plain cut on phrase starts everywhere else.
 - **SFX:** real Artlist recordings in `library/audio/sfx/` (LICENSE.txt maps role → title). Roles:
   - whoosh ×4 variants, swish_paper, paper, pen, pop/pop_2, logo, click, counter, shutter
