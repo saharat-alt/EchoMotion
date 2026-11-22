@@ -250,13 +250,17 @@ function counter(o, t) {  // big data number (brand: "เสียงสะท�
 function card(o, t, t0, t1) {  // black interstitial text card, typed on (ref), our ink + cream + brand underline
   if (o.style === 'paper') return paperCard(o, t, t0, t1);
   g.fillStyle = BLUE; g.fillRect(0, 0, W, H);
-  const lines = o.lines, total = lines.join('').length, typed = Math.floor(total * clamp((t - t0) / (o.type || 1.2)));
+  // owner review 2026-11-22 (EP01 "มีช่วงที่ fonts หลุด"): typing letter by letter cut Thai clusters in half (a vowel or
+  // tone mark left floating = broken glyphs). Type by WORD (Intl.Segmenter, Thai dictionary) so a cluster is never split.
+  const seg = (ln) => [...new Intl.Segmenter('th', { granularity: 'word' }).segment(ln)].map((x) => x.segment);
+  const lines = o.lines, parts = lines.map(seg), total = parts.flat().length, typed = Math.ceil(total * clamp((t - t0) / (o.type || 1.2)));
   g.font = `700 ${o.size || 78}px DEHead`; g.textAlign = 'center'; g.textBaseline = 'middle';
   let used = 0;
   lines.forEach((ln, i) => {
-    const y = 900 - (lines.length - 1) * 60 + i * 120, n = clamp(typed - used, 0, ln.length); used += ln.length;
-    const shown = ln.slice(0, n); g.fillStyle = o.hot === i ? DE.color.sky : '#fff'; g.fillText(shown, W / 2, y);
-    if (o.hot === i && n === ln.length) { const w = g.measureText(ln).width; const k = E((t - t0 - (o.type || 1.2)) / 0.4); g.fillStyle = ORANGE; g.fillRect(W / 2 - w / 2, y + 52, w * k, 10); }
+    const y = 900 - (lines.length - 1) * 60 + i * 120, n = clamp(typed - used, 0, parts[i].length); used += parts[i].length;
+    const shown = parts[i].slice(0, n).join(''); g.fillStyle = o.hot === i ? DE.color.sky : '#fff';
+    g.textAlign = 'left'; const full = g.measureText(ln).width; g.fillText(shown, W / 2 - full / 2, y); g.textAlign = 'center';  // anchored left: the line does not slide while it types
+    if (o.hot === i && n === parts[i].length) { const w = g.measureText(ln).width; const k = E((t - t0 - (o.type || 1.2)) / 0.4); g.fillStyle = ORANGE; g.fillRect(W / 2 - w / 2, y + 52, w * k, 10); }
   });
 }
 // owner review 2026-11-22 (REF_SPEC 37): no flat all-blue card. 'paper' card = the shot's plate blurred and dimmed behind

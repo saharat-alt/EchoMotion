@@ -1,0 +1,137 @@
+{
+ "canvas": [
+  900,
+  1355
+ ],
+ "mouth": {
+  "cx": 427.6474435196195,
+  "cy": 677.534631391201,
+  "w": 126.0,
+  "h": 96.0
+ },
+ "poses": {
+  "arms_crossed": {
+   "file": "poses/arms_crossed.png",
+   "skin": [
+    253,
+    212,
+    186
+   ]
+  },
+  "bye": {
+   "file": "poses/bye.png",
+   "skin": [
+    253,
+    206,
+    178
+   ]
+  },
+  "chin": {
+   "file": "poses/chin.png",
+   "skin": [
+    253,
+    209,
+    182
+   ]
+  },
+  "count_1": {
+   "file": "poses/count_1.png",
+   "skin": [
+    253,
+    211,
+    186
+   ]
+  },
+  "count_2": {
+   "file": "poses/count_2.png",
+   "skin": [
+    254,
+    209,
+    182
+   ]
+  },
+  "count_3": {
+   "file": "poses/count_3.png",
+   "skin": [
+    253,
+    211,
+    185
+   ]
+  },
+  "explain": {
+   "file": "poses/explain.png",
+   "skin": [
+    253,
+    214,
+    188
+   ]
+  },
+  "hold_card": {
+   "file": "poses/hold_card.png",
+   "skin": [
+    253,
+    211,
+    184
+   ]
+  },
+  "ok": {
+   "file": "poses/ok.png",
+   "skin": [
+    253,
+    208,
+    181
+   ]
+  },
+  "phone": {
+   "file": "poses/phone.png",
+   "skin": [
+    254,
+    208,
+    181
+   ]
+  },
+  "point_side": {
+   "file": "poses/point_side.png",
+   "skin": [
+    253,
+    207,
+    180
+   ]
+  },
+  "point_up": {
+   "file": "poses/point_up.png",
+   "skin": [
+    253,
+    209,
+    182
+   ]
+  },
+  "shrug": {
+   "file": "poses/shrug.png",
+   "skin": [
+    253,
+    208,
+    180
+   ]
+  },
+  "wow": {
+   "file": "poses/wow.png",
+   "skin": [
+    222,
+    163,
+    138
+   ]
+  }
+ },
+ "visemes": [
+  "rest",
+  "mbp",
+  "small",
+  "a",
+  "e",
+  "o",
+  "u",
+  "fv"
+ ],
+ "viseme_scale": 0.8761589403973511
+}

@@ -201,7 +201,16 @@ DE.Mascot = class {
       g.drawImage(base, -8 * S * 2, -6 * S * 2, W, H); g.restore();
     }
     g.drawImage(base, 0, 0, W, H);
-    if (open > 0) {
+    if (img.rig && o.visemes) {  // rig v2 (REF_SPEC 38): the pose's own closed mouth is covered by a skin patch, then the
+      // viseme picked from the spoken sound is drawn on twos (15 fps) with a tiny squash on change; 'rest' keeps the drawn smile
+      const R = img.rig, m = R.mouth, sk = (R.poses[pose] || {}).skin || [245, 205, 180];
+      const tt = Math.floor(t * 15) / 15; let v = 'rest', vt = 0; for (const q of o.visemes) { if (q.t > tt) break; v = q.v; vt = q.t; }
+      if (v !== 'rest' && img.vis[v]) {
+        g.fillStyle = `rgb(${sk[0]},${sk[1]},${sk[2]})`; g.beginPath(); g.ellipse(m.cx * S, (m.cy + m.h * 0.12) * S, m.w * 0.62 * S, m.h * 0.42 * S, 0, 0, Math.PI * 2); g.fill();
+        const im = img.vis[v], pop = 1 + 0.08 * (1 - DE.clamp((tt - vt) / 0.1));
+        g.save(); g.translate(m.cx * S, (m.cy + m.h * 0.08) * S); g.scale(pop, 1 / pop); g.drawImage(im, -im.width * S / 2, -im.height * S / 2, im.width * S, im.height * S); g.restore();
+      }
+    } else if (open > 0) {
       // skin patch hides the closed smile (never scaled), then only the mouth shape is squashed from its top edge
       const th = pose === 'thumbs';
       g.drawImage(th ? img.patchThumbs : img.patchWave, 0, 0, W, H);
@@ -215,6 +224,14 @@ DE.Mascot = class {
   }
 };
 
+// rig v2: poses + visemes made by engine/tools/mascot_prep.py (brand/mascot/rig.json). Old images stay for the baselines.
+DE.loadMascotRig = async function (base) {
+  const m = base + '/mascot/', x = new XMLHttpRequest(); x.open('GET', m + 'rig.json', false); x.send();  // file:// pages: XHR works where fetch does not
+  const R = JSON.parse(x.responseText), out = await DE.loadMascot(base);
+  for (const [k, p] of Object.entries(R.poses)) out[k] = await DE.loadImage(m + p.file);
+  out.vis = {}; for (const v of R.visemes) out.vis[v] = await DE.loadImage(m + 'visemes/' + v + '.png');
+  out.rig = R; return out;
+};
 DE.loadMascot = async function (base) {
   const m = base + '/mascot/';
   const names = ['base_wave', 'base_thumbs', 'mouth_shape_wave', 'mouth_shape_thumbs', 'mouth_patch_wave', 'mouth_patch_thumbs', 'eyes_closed'];

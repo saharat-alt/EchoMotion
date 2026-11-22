@@ -31,7 +31,7 @@ JS = """([anchor, phrases, sel]) => {
 meta = {}
 with sync_playwright() as p:
     b = p.chromium.launch(); pg = b.new_page(viewport={"width": 1280, "height": 900}, device_scale_factor=2)
-    pg.goto(url, wait_until="networkidle"); pg.wait_for_timeout(1200)
+    pg.goto(url, wait_until="domcontentloaded"); pg.wait_for_timeout(1200)
     for name, s in spec.items():
         r = pg.evaluate(JS, [s["anchor"], s.get("phrases", []), s.get("closest")])
         if not r:

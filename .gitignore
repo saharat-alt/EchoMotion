@@ -42,3 +42,5 @@ jobs/**/assets/web/*_top.png
 jobs/**/assets/web/blog_img*.png
 jobs/**/assets/docs/*_ipo.png
 jobs/**/assets/docs/claude_2023.png
+jobs/**/assets/docs/*_top.png
+jobs/**/input/voice_raw.mp3

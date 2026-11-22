@@ -83,9 +83,9 @@ window.setup = async (data) => {
   D = data; docs = D.docs;
   await DE.injectFonts(D.brandBase);
   document.getElementById('grain').style.backgroundImage = `url(${CL.grain()})`;
-  const imgs = await DE.loadMascot(D.brandBase);
+  const imgs = D.mascot && D.mascot.visemes ? await DE.loadMascotRig(D.brandBase) : await DE.loadMascot(D.brandBase);
   mascot = new DE.Mascot(document.getElementById('mascot'), imgs, Object.assign({ x: 830, y: 2010, scale: 0.56, rim: false }, D.mascot));
-  cap = new DE.Captions(document.body, D.captions, { y: 1160, size: 62, maxWidth: 1000 });  // quiet captions: the collage is the hero (ref AIพูด)
+  cap = new DE.Captions(document.body, D.captions, Object.assign({ y: 1160, size: 62, maxWidth: 1000 }, D.captionStyle || {}));  // captionStyle: lighter styles (REF_SPEC 37)  // quiet captions: the collage is the hero (ref AIพูด)
   fxG = document.getElementById('fx').getContext('2d');
   // desks: [{img, t0, t1, keys:[{t,x,y,s}]}] — one physical table per section, camera moves continuously within it
   D.desks = D.desks || (D.desk ? [Object.assign({ t0: 0, t1: 1e9 }, D.desk)] : []);
