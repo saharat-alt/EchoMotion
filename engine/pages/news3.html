@@ -42,6 +42,8 @@ async function piece(p) {
     let src = p.img.startsWith('brand:') ? D.brandBase + '/' + p.img.slice(6) : J(p.img);
     if (p.halftone) { if (!ht[src]) { const im = await DE.loadImage(src); ht[src] = CL.halftone(im, { w: Math.round(p.w * 1.2), cell: p.cell || 8 }); } src = ht[src]; }
     el.innerHTML = `<div class="kl" style="clip-path:${torn}"><img src="${src}"></div>`;
+  } else if (p.k === 'cut') {   // transparent cut-out illustration: no paper frame, soft shadow (explainer pictures, user 2026-11-23)
+    el.innerHTML = `<img src="${J(p.img)}" style="display:block;width:100%;filter:drop-shadow(0 16px 24px rgba(0,0,0,.20))">`;
   } else if (p.k === 'video') {
     el.innerHTML = `<div class="kl" style="clip-path:${torn}"><video muted preload="auto" src="${J('assets/media/v' + p.n + '.webm')}"></video></div>`;
   } else if (p.k === 'doc') {

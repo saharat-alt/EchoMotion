@@ -45,13 +45,18 @@ function faceAt(t) { const F = D.face; let i = F.findIndex((f) => f.t > t); if (
 function frame(seg, f, t) {
   if (D.static) { f = D.anchor; }   // fixed anchor (mean face position): the frame never follows the noisy face track
   const push = D.static ? 1 : 1 + 0.05 * clamp((t - seg.t0) / (seg.t1 - seg.t0));
+  if (seg.layout === 'pip') { const P = D.pip || { x: 600, y: 1180, w: 420, h: 600 }, sc = (P.w / W) * 1.2;   // head and shoulders in the small box
+    const tx = clamp(P.w / 2 - f.x * sc, P.w - W * sc, 0), ty = clamp(P.h * 0.42 - f.y * sc, P.h - H * sc, 0);
+    return { top: P.y, h: P.h, left: P.x, w: P.w, tx, ty, sc, r: 36 }; }
   if (seg.layout === 'split') { const sc = (seg.zoom || 1.15) * push, BH = 960;
     const tx = clamp(W / 2 - f.x * sc, W - W * sc, 0), ty = clamp(BH * 0.6 - f.y * sc, BH - H * sc, 0);
     return { top: 960, h: 960, tx, ty, sc }; }
   const z = (seg.zoom || 1) * push;
   return { top: 0, h: H, tx: f.x * (1 - z), ty: f.y * (1 - z), sc: z };
 }
-function placeVideo(el, v, b) { el.style.top = b.top + 'px'; el.style.height = b.h + 'px'; v.style.transform = `translate(${b.tx}px, ${b.ty}px) scale(${b.sc})`; }
+function placeVideo(el, v, b) { el.style.top = b.top + 'px'; el.style.height = b.h + 'px'; el.style.left = (b.left || 0) + 'px'; el.style.width = (b.w || W) + 'px';
+  el.style.borderRadius = (b.r || 0) + 'px'; el.style.boxShadow = b.r ? '0 18px 40px rgba(0,0,0,.45)' : 'none'; el.style.outline = b.r ? '6px solid #fff' : 'none';
+  v.style.transform = `translate(${b.tx}px, ${b.ty}px) scale(${b.sc})`; }
 
 // ---------- drawing helpers ----------
 function txt(g, s, x, y, font, color, align = 'center') { g.font = font; g.fillStyle = color; g.textAlign = align; g.textBaseline = 'middle'; g.fillText(s, x, y); }
@@ -119,15 +124,16 @@ window.renderAt = async (t) => {
   const s = D.segments.find((q) => t >= q.t0 && t < q.t1) || D.segments[D.segments.length - 1], f = faceAt(t);
   const prev = D.segments[D.segments.indexOf(s) - 1], dt = t - s.t0;
   const b = frame(s, f, t), a = prev ? frame(prev, f, t) : b, bl = D.static ? 1 : (prev && prev.layout !== s.layout ? E(dt / 0.22) : 1);
-  const m = {}; for (const p of ['top', 'h', 'tx', 'ty', 'sc']) m[p] = lerp(a[p], b[p], bl);
+  const m = {}; for (const p of ['top', 'h', 'tx', 'ty', 'sc']) m[p] = lerp(a[p], b[p], bl); m.left = b.left; m.w = b.w; m.r = b.r;
   const hide = s.layout === 'cut';
   for (const [el, v] of (D.cutout ? [[document.getElementById('spk'), V], [document.getElementById('cutw'), C]] : [[document.getElementById('spk'), V]])) { el.style.display = hide ? 'none' : 'block'; placeVideo(el, v, m); }
   document.getElementById('spk').style.filter = s.dim ? `brightness(${1 - 0.35 * E(dt / 0.4)}) blur(${s.blur ? 6 * E(dt / 0.4) : 0}px)` : 'none';
   for (const g of [gb, gi]) { g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H); g.globalAlpha = 1; }
   // behind layer: in split it lives in the speaker half only (clip), elsewhere full frame
   if (s.behind) { gb.save(); if (s.layout === 'split') { gb.beginPath(); gb.rect(0, 960, W, 960); gb.clip(); } s.behind.forEach((o) => behind(o, t)); gb.restore(); }
-  if (s.layout === 'split' || s.layout === 'cut') {
-    const R = s.layout === 'cut' ? { y: 0, h: H } : { y: 0, h: 960 }, im = imgs[s.insert.img], zin = 1 + 0.05 * clamp(dt / (s.t1 - s.t0));
+  document.getElementById('spk').style.zIndex = s.layout === 'pip' ? 5 : 1;
+  if (s.layout === 'split' || s.layout === 'cut' || s.layout === 'pip') {
+    const R = s.layout === 'cut' || s.layout === 'pip' ? { y: 0, h: H } : { y: 0, h: 960 }, im = imgs[s.insert.img], zin = 1 + 0.05 * clamp(dt / (s.t1 - s.t0));
     gi.save(); gi.beginPath(); gi.rect(0, R.y, W, R.h); gi.clip();
     // blurred copy behind (ref: screen recording over a blurred copy of itself)
     const cs = Math.max(W / im.width, R.h / im.height) * 1.1; gi.filter = 'blur(28px) brightness(.55)'; gi.drawImage(im, (W - im.width * cs) / 2, R.y + (R.h - im.height * cs) / 2, im.width * cs, im.height * cs); gi.filter = 'none';
@@ -141,7 +147,7 @@ window.renderAt = async (t) => {
   }
   (s.cards || []).forEach((o) => card(o, t)); (s.logos || []).forEach((o) => logo(o, t)); (s.badges || []).forEach((o) => badge(o, t));
   if (s.list) list(s.list, t);
-  cap.el.style.top = (s.capY || 1760) + 'px';
+  cap.el.style.top = (s.capY || D.capY || 1380) + 'px';
   cap.el.style.display = s.noCap ? 'none' : 'flex';
   cap.renderAt(t);
 };
