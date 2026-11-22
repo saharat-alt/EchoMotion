@@ -77,14 +77,15 @@ shot(T("แค่8เดือนต่อมา"), T("ปีนี้แค่9
      counters=[dict(NUM, **{"from": 183, "to": 965, "prefix": "$", "suffix": "B", "label": "มูลค่าบริษัท · พ.ค. 2026", "x": 540, "y": 700, "at": T("ขึ้นไปเกือบล้านล้าน") - 0.2, "dur": 1.0, "size": 230, "d3": True})])
 shot(T("ปีนี้แค่9เดือน"), T("แล้วก็มาถึงวันที่19"), plate="trade", **{"in": "push"}, cam=cam(1.02, 1.1, 540, 900),
      counters=[dict(NUM, **{"from": 0, "to": 33.2, "dec": 1, "prefix": "$", "suffix": "B", "label": "รายได้ 9 เดือนแรกของปี 2026", "x": 540, "y": 700, "at": T("สามหมื่นกว่าล้าน"), "dur": 0.9, "size": 190})])
-# ---- IPO day (the price pill lives only in this part)
+# ---- IPO day (the price pill lives only in this part). v3 (director pass 2026-11-23): the price-up beats sit on the rising-board
+# set (exchange), the falling-board set (trade) only once the price slides; captions get a cream halo over the boards
 shot(T("แล้วก็มาถึงวันที่19"), T("ตอนแรกตั้งราคา"), plate="exchange", **{"in": "push"}, cam=cam(1.0, 1.08, 760, 900),
      photos=[{"img": PH["nasdaq"], "at": T("แล้วก็มาถึงวันที่19") + 0.1, "x": 540, "y": 1000, "w": 820, "h": 620, "rot": 0.02, "focus": [0.5, 0.45], "label": "Nasdaq MarketSite, New York", "credit": CR["nasdaq"]}])
 shot(T("ตอนแรกตั้งราคา"), T("เปิดตลาดปุ๊บ"), plate="exchange", cam=cam(1.08, 1.14, 540, 1000),
      props=[{"kind": "crowd", "cols": 10, "rows": 5, "x": 270, "y": 1150, "dx": 60, "dy": 62, "keep": 50, "cut": 999, "front": True, "at": T("แต่คนแย่งกันซื้อ")}])
-shot(T("เปิดตลาดปุ๊บ"), T("ใครซื้อตอนIPO"), plate="trade", **{"in": "zoom"}, cam=cam(1.1, 1.3, 640, 640),
+shot(T("เปิดตลาดปุ๊บ"), T("ใครซื้อตอนIPO"), plate="exchange", **{"in": "zoom"}, cam=cam(1.1, 1.3, 640, 640),
      photos=[{"img": PH["fox"], "at": T("เปิดตลาดปุ๊บ") + 0.3, "x": 540, "y": 1000, "w": 880, "h": 720, "rot": -0.02, "focus": [0.5, 0.35], "credit": CR["fox"], "backdrop": True}])
-shot(T("ใครซื้อตอนIPO"), T("เงินที่ระดมได้"), plate="trade", cam=cam(1.15, 1.2, 540, 900),
+shot(T("ใครซื้อตอนIPO"), T("เงินที่ระดมได้"), plate="exchange", cam=cam(1.15, 1.2, 540, 900),
      actors=[A("investor", 540, 1300, 1.6, "cheer", "grin")],
      counters=[dict(NUM, **{"from": 0, "to": 34, "prefix": "+", "suffix": "%", "x": 540, "y": 700, "at": T("กำไร34%"), "dur": 0.7, "size": 220})])
 shot(T("เงินที่ระดมได้"), T("แต่เดี๋ยวก่อนนะ"), plate="exchange", **{"in": "push"}, cam=cam(1.02, 1.08, 540, 900),
@@ -117,7 +118,7 @@ pill = {"from": T("ตอนแรกตั้งราคา"), "to": T("แล
     {"t": T("ราคาพุ่งไป111") + 0.5, "text": "$111.50", "hot": False}, {"t": T("ทั้งวันราคาค่อยๆ"), "text": "$111.50 → ?", "hot": True},
     {"t": T("ปิดที่97") + 0.3, "text": "ปิด $97.17", "hot": True}]}
 D = {"jobBase": here.resolve().as_uri(), "brandBase": (here.parents[2] / "brand").resolve().as_uri(),
-     "plates": P, "captions": caps, "capY": 250, "captionStyle": {"mode": "clean", "size": 54}, "duration": END, "pill": [], "focus": True, "handle": "@dataechooo",
+     "plates": P, "captions": caps, "capY": 250, "captionStyle": {"mode": "clean", "size": 54, "halo": True}, "duration": END, "pill": [], "focus": True, "handle": "@dataechooo",
      "look": "paper", "dateY": 110, "dateCenter": True, "dates": [
         {"t": 0, "text": "19 พ.ย. 2026"}, {"t": T("ย้อนไปปี2021"), "text": "2021"}, {"t": T("ต้นปี2023"), "text": "มี.ค. 2023"},
         {"t": T("ปีที่แล้วบริษัท"), "text": "ก.ย. 2025"}, {"t": T("แค่8เดือนต่อมา"), "text": "พ.ค. 2026"}, {"t": T("ปีนี้แค่9เดือน"), "text": "ม.ค.–ก.ย. 2026"},

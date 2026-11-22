@@ -128,14 +128,15 @@ DE.Captions = class {
       background: paper ? DE.color.cream : 'none',
       borderRadius: paper ? '6px' : '0',
       boxShadow: paper ? '0 6px 18px rgba(0,0,0,.22)' : 'none',
-      textShadow: paper || clean ? 'none' : thin ? '0 4px 0 rgba(0,0,0,.25)' : '0 2px 10px rgba(0,0,0,.55), 0 0 2px rgba(0,0,0,.6)',
+      // clean + halo: a soft cream glow so ink text stays readable over busy set details (price boards), invisible on plain walls
+      textShadow: clean && s.halo ? `0 0 6px ${DE.color.cream}, 0 0 14px ${DE.color.cream}, 0 0 24px ${DE.color.cream}, 0 0 34px ${DE.color.cream}` : paper || clean ? 'none' : thin ? '0 4px 0 rgba(0,0,0,.25)' : '0 2px 10px rgba(0,0,0,.55), 0 0 2px rgba(0,0,0,.6)',
       rotate: paper ? ((i % 2 ? 1 : -1) * 1.2) + 'deg' : '0deg',
     });
     for (const w of this.chunks[i].words) {
       const sp = document.createElement('span');
       sp.textContent = w.text; sp.style.display = 'inline-block';
       if (thin) { sp.style.webkitTextStroke = '6px ' + DE.color.ink; sp.style.paintOrder = 'stroke fill'; }
-      if (w.hl && clean) { sp.style.background = DE.color.blue; sp.style.color = '#fff'; sp.style.padding = '0 12px'; sp.style.borderRadius = '8px'; }
+      if (w.hl && clean) { sp.style.background = DE.color.blue; sp.style.color = '#fff'; sp.style.padding = '0 12px'; sp.style.borderRadius = '8px'; sp.style.textShadow = 'none'; }
       else if (w.hl && thin && s.block) { sp.style.webkitTextStroke = '0'; sp.style.background = DE.color.blue; sp.style.color = '#fff'; sp.style.padding = '0 12px'; sp.style.borderRadius = '8px'; sp.style.textShadow = 'none'; }
       else if (w.hl) {
         if (paper) { sp.style.background = DE.color.sky; sp.style.padding = '0 6px'; sp.style.borderRadius = '4px'; }
@@ -174,11 +175,15 @@ DE.Mascot = class {
     const breathe = Math.sin(t * 2 * Math.PI * 0.35);
     const pop = since < 0.5 ? 1 - DE.spring(since, 12, 0.45) : 0; // 1 -> 0 with overshoot
     const em = this.emoteAt(t);
-    let hop = 0, tilt = Math.sin(t * 1.3) * 0.025 + env * 0.03 * Math.sin(t * 9);
-    if (em && em.type === 'hop') hop = Math.sin(Math.min(1, em.dt / 0.45) * Math.PI) * 60;
+    // rig v2 (visemes): the mouth carries the speech, so NO loudness-driven tilt/stretch. The pivot is at the feet below the frame,
+    // so the old env wobble moved the head ~20 px per frame and the 12 % pose pop ~90 px ("มีความสั่นแปลกๆ", user 2026-11-23, REF_SPEC 52).
+    // Only smooth slow motion here: gentle sway (~5 px at the head), breathing, a small settle on a pose change.
+    const rig = !!(img.rig && o.visemes);
+    let hop = 0, tilt = rig ? Math.sin(t * 0.9) * 0.006 : Math.sin(t * 1.3) * 0.025 + env * 0.03 * Math.sin(t * 9);
+    if (em && em.type === 'hop') hop = Math.sin(Math.min(1, em.dt / 0.45) * Math.PI) * (rig ? 36 : 60);
     if (em && em.type === 'shake') tilt += Math.sin(em.dt * 40) * 0.06 * (1 - em.dt / 0.8);
-    const sy = 1 + breathe * 0.012 + pop * 0.12 + env * 0.015;
-    const sx = 1 - breathe * 0.008 - pop * 0.08;
+    const sy = rig ? 1 + breathe * 0.005 + pop * 0.025 : 1 + breathe * 0.012 + pop * 0.12 + env * 0.015;
+    const sx = rig ? 1 - breathe * 0.003 - pop * 0.015 : 1 - breathe * 0.008 - pop * 0.08;
     // position: optional moves [{t,x,y,scale}] eased over 0.45 s (corner narrator <-> centre host)
     let X = o.x, Y = o.y, S = o.scale;
     for (const mv of o.moves || []) {
