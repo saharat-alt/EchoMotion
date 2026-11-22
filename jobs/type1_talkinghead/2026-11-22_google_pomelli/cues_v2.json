@@ -1,0 +1,98 @@
+[
+ {
+  "t": 2.16,
+  "sfx": "pop",
+  "db": -18
+ },
+ {
+  "t": 12.67,
+  "sfx": "pop",
+  "db": -18
+ },
+ {
+  "t": 13.96,
+  "sfx": "swish_paper",
+  "db": -17,
+  "align": "peak"
+ },
+ {
+  "t": 17.26,
+  "sfx": "swish_paper",
+  "db": -17,
+  "align": "peak"
+ },
+ {
+  "t": 19.9,
+  "sfx": "swish_paper",
+  "db": -17,
+  "align": "peak"
+ },
+ {
+  "t": 20.81,
+  "sfx": "swish_paper",
+  "db": -17,
+  "align": "peak"
+ },
+ {
+  "t": 21.72,
+  "sfx": "swish_paper",
+  "db": -17,
+  "align": "peak"
+ },
+ {
+  "t": 22.8,
+  "sfx": "swish_paper",
+  "db": -17,
+  "align": "peak"
+ },
+ {
+  "t": 24.46,
+  "sfx": "swish_paper",
+  "db": -17,
+  "align": "peak"
+ },
+ {
+  "t": 29.41,
+  "sfx": "swish_paper",
+  "db": -17,
+  "align": "peak"
+ },
+ {
+  "t": 32.41,
+  "sfx": "swish_paper",
+  "db": -17,
+  "align": "peak"
+ },
+ {
+  "t": 34.752,
+  "sfx": "swish_paper",
+  "db": -17,
+  "align": "peak"
+ },
+ {
+  "t": 40.77,
+  "sfx": "swish_paper",
+  "db": -17,
+  "align": "peak"
+ },
+ {
+  "t": 42.92,
+  "sfx": "pop",
+  "db": -18
+ },
+ {
+  "t": 44.65,
+  "sfx": "pop",
+  "db": -18
+ },
+ {
+  "t": 48.61,
+  "sfx": "pop",
+  "db": -18
+ },
+ {
+  "t": 49.08,
+  "sfx": "pop",
+  "db": -18
+ }
+]

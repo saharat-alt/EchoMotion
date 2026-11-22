@@ -80,6 +80,7 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
 - เล่า Business: lighter caption style (no Kanit Black + thick stroke); no plain all-blue cards; `pill` only while its topic is told; Thai on cards appears by word, never letter by letter.
 - เล่าข่าว mascot: viseme mouths from word timing (not one squashed mouth); change gesture every 2-4 s on the word. Assets brief: docs/prompts/mascot_gestures.md.
 - เซฟพูด source = the raw 1080p landscape recordings (REF_SPEC 40), never th_sample.
+- **เซฟพูด v2 rules (REF_SPEC 49):** static speaker frame (scene `static: true`, fixed anchor, zoom only changes on cuts), no cutout layer, no dimming, inserts = tight crops of the real screen shown big, one thing at a time; QA = measure shake (phase correlation) + 4 consecutive full-size frames before sending.
 - **Refs first (REF_SPEC 45, user 2026-11-22):** every idea/use case/example comes from a real post or video where people did it, link + date in the fact table, collected BEFORE writing. Never invent scenarios.
 - **Hooks (REF_SPEC 46, user 2026-11-22):** open docs/HOOK_REFS.md first and collect how other channels hooked the same story; take a proven shape, put the news itself in it, ≤ 4 s, tease paid off in the clip.
 - Script tone (REF_SPEC 43-44): เล่าข่าว for viewers with zero tech knowledge (no jargon, one everyday example per fact, dumbify pass); เล่า Business told casually like to a friend, rounded numbers.

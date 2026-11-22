@@ -33,8 +33,8 @@ window.setup = async (data) => {
   gb = document.getElementById('bk').getContext('2d'); gi = document.getElementById('ins').getContext('2d');
   for (const [k, p] of Object.entries(D.images || {})) imgs[k] = await DE.loadImage(J(p));
   V = document.getElementById('vbg'); C = document.getElementById('vcut');
-  V.src = J(D.footage); C.src = J(D.cutout);
-  await Promise.all([V, C].map((v) => new Promise((ok) => { if (v.readyState >= 2) ok(); v.addEventListener('loadeddata', ok, { once: true }); setTimeout(ok, 8000); })));
+  V.src = J(D.footage); if (D.cutout) C.src = J(D.cutout); else document.getElementById('cutw').style.display = 'none';
+  await Promise.all((D.cutout ? [V, C] : [V]).map((v) => new Promise((ok) => { if (v.readyState >= 2) ok(); v.addEventListener('loadeddata', ok, { once: true }); setTimeout(ok, 8000); })));
   cap = new DE.Captions(document.body, D.captions, Object.assign({ y: 1760, size: 54, maxWidth: 960, mode: 'paper' }, D.captionStyle));
   cap.el.style.zIndex = 60;
 };
@@ -43,7 +43,8 @@ function faceAt(t) { const F = D.face; let i = F.findIndex((f) => f.t > t); if (
   const a = F[i - 1], b = F[i], k = clamp((t - a.t) / ((b.t - a.t) || 1)); return { x: lerp(a.cx, b.cx, k) * W, y: lerp(a.cy, b.cy, k) * H, h: lerp(a.h, b.h, k) * H }; }
 // speaker transform per layout: full/float = whole frame with push; split = bottom half, face kept in the box
 function frame(seg, f, t) {
-  const push = 1 + 0.05 * clamp((t - seg.t0) / (seg.t1 - seg.t0));
+  if (D.static) { f = D.anchor; }   // fixed anchor (mean face position): the frame never follows the noisy face track
+  const push = D.static ? 1 : 1 + 0.05 * clamp((t - seg.t0) / (seg.t1 - seg.t0));
   if (seg.layout === 'split') { const sc = (seg.zoom || 1.15) * push, BH = 960;
     const tx = clamp(W / 2 - f.x * sc, W - W * sc, 0), ty = clamp(BH * 0.6 - f.y * sc, BH - H * sc, 0);
     return { top: 960, h: 960, tx, ty, sc }; }
@@ -114,13 +115,13 @@ function logo(o, t) { const d = t - o.at; if (d < 0 || (o.until && t > o.until))
   g.shadowColor = 'transparent'; g.drawImage(im, -w / 2, -h / 2, w, h); g.restore(); }
 
 window.renderAt = async (t) => {
-  await Promise.all([seekV(V, t), seekV(C, t)]);
+  await Promise.all(D.cutout ? [seekV(V, t), seekV(C, t)] : [seekV(V, t)]);
   const s = D.segments.find((q) => t >= q.t0 && t < q.t1) || D.segments[D.segments.length - 1], f = faceAt(t);
   const prev = D.segments[D.segments.indexOf(s) - 1], dt = t - s.t0;
-  const b = frame(s, f, t), a = prev ? frame(prev, f, t) : b, bl = prev && prev.layout !== s.layout ? E(dt / 0.22) : 1;
+  const b = frame(s, f, t), a = prev ? frame(prev, f, t) : b, bl = D.static ? 1 : (prev && prev.layout !== s.layout ? E(dt / 0.22) : 1);
   const m = {}; for (const p of ['top', 'h', 'tx', 'ty', 'sc']) m[p] = lerp(a[p], b[p], bl);
   const hide = s.layout === 'cut';
-  for (const [el, v] of [[document.getElementById('spk'), V], [document.getElementById('cutw'), C]]) { el.style.display = hide ? 'none' : 'block'; placeVideo(el, v, m); }
+  for (const [el, v] of (D.cutout ? [[document.getElementById('spk'), V], [document.getElementById('cutw'), C]] : [[document.getElementById('spk'), V]])) { el.style.display = hide ? 'none' : 'block'; placeVideo(el, v, m); }
   document.getElementById('spk').style.filter = s.dim ? `brightness(${1 - 0.35 * E(dt / 0.4)}) blur(${s.blur ? 6 * E(dt / 0.4) : 0}px)` : 'none';
   for (const g of [gb, gi]) { g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H); g.globalAlpha = 1; }
   // behind layer: in split it lives in the speaker half only (clip), elsewhere full frame
@@ -130,7 +131,7 @@ window.renderAt = async (t) => {
     gi.save(); gi.beginPath(); gi.rect(0, R.y, W, R.h); gi.clip();
     // blurred copy behind (ref: screen recording over a blurred copy of itself)
     const cs = Math.max(W / im.width, R.h / im.height) * 1.1; gi.filter = 'blur(28px) brightness(.55)'; gi.drawImage(im, (W - im.width * cs) / 2, R.y + (R.h - im.height * cs) / 2, im.width * cs, im.height * cs); gi.filter = 'none';
-    const iw = (s.insert.w || 980) * zin, ih = iw * im.height / im.width;
+    let iw = (s.insert.w || 980) * zin, ih = iw * im.height / im.width; const maxH = R.h - 220; if (ih > maxH) { ih = maxH; iw = ih * im.width / im.height; }
     gi.save(); gi.shadowColor = 'rgba(0,0,0,.45)'; gi.shadowBlur = 40; gi.shadowOffsetY = 16; rr(gi, (W - iw) / 2, R.y + (R.h - ih) / 2 + (s.insert.dy || 0), iw, ih, 22); gi.fillStyle = '#000'; gi.fill(); gi.restore();
     rr(gi, (W - iw) / 2, R.y + (R.h - ih) / 2 + (s.insert.dy || 0), iw, ih, 22); gi.save(); gi.clip(); gi.drawImage(im, (W - iw) / 2, R.y + (R.h - ih) / 2 + (s.insert.dy || 0), iw, ih); gi.restore();
     for (const r of s.insert.rings || []) { const sc = iw / im.width; ring(gi, (W - iw) / 2 + r.x * sc, R.y + (R.h - ih) / 2 + (s.insert.dy || 0) + r.y * sc, r.r * sc, (t - r.at) / 0.4); }
