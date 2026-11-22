@@ -173,5 +173,8 @@ TOON.cast = {
   board3: { skin: '#C99A72', hair: { style: 'bald', color: '#3A2A1E' }, beard: '#3A2A1E', top: { color: '#5A6378', kind: 'coat', accent: '#FFFFFF' }, legs: '#2B2F45', seed: 8 },
   analyst: { skin: '#F4CDA8', hair: { style: 'curly', color: '#6B4A2E' }, glasses: 'square', top: { color: DE.color.blue, kind: 'coat', accent: '#FFFFFF' }, legs: '#22263A', seed: 9 },
   lawmaker: { skin: '#F1C9A0', hair: { style: 'grey', color: '#D8DBE0' }, top: { color: '#1E2A4A', kind: 'coat', accent: '#FE4C1C' }, legs: '#1A1F33', seed: 10 },
+  dario: { skin: '#F1CBA6', hair: { style: 'curly', color: '#3A2A1E' }, glasses: 'round', top: { color: '#3A3F55', kind: 'jacket', accent: '#FFFFFF' }, legs: '#22263A', seed: 12 },
+  daniela: { skin: '#F4D2B0', hair: { style: 'bob', color: '#8A6A4A' }, top: { color: '#5E7A6E', kind: 'coat', accent: '#FFF8EC' }, legs: '#2B2F45', seed: 13 },
+  investor: { skin: '#E2B48C', hair: { style: 'short', color: '#1E1E24' }, top: { color: '#2B2F45', kind: 'coat', accent: DE.color.sky }, legs: '#1A1F33', seed: 14 },
   worker: { skin: '#E9BE93', hair: { style: 'bob', color: '#1E1E24' }, top: { color: '#7A3B2E', kind: 'jacket', accent: '#FFF8EC' }, legs: '#2B2F45', seed: 11 },
 };

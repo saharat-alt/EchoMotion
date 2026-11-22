@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<style>
+  html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#1A1B1E}
+  .vw{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden}
+  .vw video{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0}
+  #spk{z-index:1} #bk{position:absolute;left:0;top:0;z-index:2} #cutw{z-index:3} #ins{position:absolute;left:0;top:0;z-index:4}
+</style></head>
+<body>
+<div id="spk" class="vw"><video id="vbg" muted preload="auto"></video></div>
+<canvas id="bk" width="1080" height="1920"></canvas>
+<div id="cutw" class="vw"><video id="vcut" muted preload="auto"></video></div>
+<canvas id="ins" width="1080" height="1920"></canvas>
+<script src="../web/de.js"></script>
+<script>
+// TYPE 1 v4 (เซฟพูด) — owner review 2026-11-22 (REF_SPEC 39-40) + IG refs in docs/FEEDBACK_2026-11-22.md:
+//  - footage = raw 1080p take cropped to 9:16 (assets/footage.webm) + a person cutout (assets/cutout.webm, VP9 alpha,
+//    engine/tools/person_matte.py) drawn ON TOP of the "behind" layer, so big words sit behind the speaker.
+//  - layouts: full (speaker, slow push), float (speaker + floating cards above the head / in front of the torso),
+//    split (real content on top, speaker below, TORN-PAPER seam instead of a straight line), cut (content full frame over a blurred copy).
+//  - every card is REAL content (official screenshots, credited), it appears on the spoken word; the face is never covered.
+//  - running checklist (ref: the "N styles" reels): items tick on the word, current one highlighted.
+// Brand: DE.color.*, DEHead / DEBody / DELatin only.
+let D, cap, V, C, gb, gi, imgs = {};
+const W = 1080, H = 1920, BLUE = DE.color.blue, TEAL = DE.color.teal, ORANGE = DE.color.orange, INK = DE.color.ink, SKY = DE.color.sky, CREAM = DE.color.cream;
+const J = (p) => D.jobBase + '/' + p;
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x)), lerp = (a, b, k) => a + (b - a) * k;
+const E = (k) => 1 - Math.pow(1 - clamp(k), 3), POP = (d) => (d <= 0 ? 0 : DE.spring(d, 12, 0.55));
+const rnd = (i) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };   // deterministic noise
+
+window.setup = async (data) => {
+  D = data; await DE.injectFonts(D.brandBase);
+  gb = document.getElementById('bk').getContext('2d'); gi = document.getElementById('ins').getContext('2d');
+  for (const [k, p] of Object.entries(D.images || {})) imgs[k] = await DE.loadImage(J(p));
+  V = document.getElementById('vbg'); C = document.getElementById('vcut');
+  V.src = J(D.footage); C.src = J(D.cutout);
+  await Promise.all([V, C].map((v) => new Promise((ok) => { if (v.readyState >= 2) ok(); v.addEventListener('loadeddata', ok, { once: true }); setTimeout(ok, 8000); })));
+  cap = new DE.Captions(document.body, D.captions, Object.assign({ y: 1760, size: 54, maxWidth: 960, mode: 'paper' }, D.captionStyle));
+  cap.el.style.zIndex = 60;
+};
+const seekV = (v, t) => new Promise((ok) => { const tt = Math.min(t, (v.duration || 99) - 0.04); if (Math.abs(v.currentTime - tt) < 0.001) return ok(); v.addEventListener('seeked', ok, { once: true }); v.currentTime = tt; setTimeout(ok, 1500); });
+function faceAt(t) { const F = D.face; let i = F.findIndex((f) => f.t > t); if (i <= 0) i = i === 0 ? 1 : F.length - 1;
+  const a = F[i - 1], b = F[i], k = clamp((t - a.t) / ((b.t - a.t) || 1)); return { x: lerp(a.cx, b.cx, k) * W, y: lerp(a.cy, b.cy, k) * H, h: lerp(a.h, b.h, k) * H }; }
+// speaker transform per layout: full/float = whole frame with push; split = bottom half, face kept in the box
+function frame(seg, f, t) {
+  const push = 1 + 0.05 * clamp((t - seg.t0) / (seg.t1 - seg.t0));
+  if (seg.layout === 'split') { const sc = (seg.zoom || 1.15) * push, BH = 960;
+    const tx = clamp(W / 2 - f.x * sc, W - W * sc, 0), ty = clamp(BH * 0.6 - f.y * sc, BH - H * sc, 0);
+    return { top: 960, h: 960, tx, ty, sc }; }
+  const z = (seg.zoom || 1) * push;
+  return { top: 0, h: H, tx: f.x * (1 - z), ty: f.y * (1 - z), sc: z };
+}
+function placeVideo(el, v, b) { el.style.top = b.top + 'px'; el.style.height = b.h + 'px'; v.style.transform = `translate(${b.tx}px, ${b.ty}px) scale(${b.sc})`; }
+
+// ---------- drawing helpers ----------
+function txt(g, s, x, y, font, color, align = 'center') { g.font = font; g.fillStyle = color; g.textAlign = align; g.textBaseline = 'middle'; g.fillText(s, x, y); }
+function rr(g, x, y, w, h, r) { g.beginPath(); g.roundRect(x, y, w, h, r); }
+function tornEdge(g, y0, w, amp, seed, down) {  // jagged paper edge from x=0..w around y0
+  const n = 54; g.lineTo(down ? w : 0, y0);
+  for (let i = 0; i <= n; i++) { const x = down ? w - (w * i) / n : (w * i) / n; g.lineTo(x, y0 + (rnd(seed + i) - 0.5) * amp + (i % 2 ? amp * 0.25 : -amp * 0.25)); }
+}
+function seam(g, y, t, seed = 7) {  // torn-paper strip between the two halves (REF_SPEC 39), with one piece of tape
+  g.save(); g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 18; g.shadowOffsetY = 6;
+  g.fillStyle = CREAM; g.beginPath(); g.moveTo(0, y - 20); tornEdge(g, y - 20, W, 22, seed, false); g.lineTo(W, y + 22); tornEdge(g, y + 22, W, 22, seed + 99, true); g.closePath(); g.fill(); g.restore();
+  g.save(); g.translate(W * 0.18, y - 6); g.rotate(-0.12); g.fillStyle = 'rgba(158,232,255,.75)'; g.fillRect(-70, -26, 140, 52); g.restore();
+}
+function tornCard(g, im, x, y, w, rot, k, seed, credit) {  // a photo/screenshot on cream paper with torn edges + tape (scrapbook)
+  const h = w * im.height / im.width, pad = 16;
+  g.save(); g.translate(x, y + 40 * (1 - k)); g.rotate(rot); g.globalAlpha = clamp(k * 1.6);
+  g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 26; g.shadowOffsetY = 12;
+  g.fillStyle = CREAM; g.beginPath(); g.moveTo(-w / 2 - pad, -h / 2 - pad); tornEdge(g, -h / 2 - pad, 0, 0, 0, false);
+  const pts = []; for (let i = 0; i <= 24; i++) pts.push([-w / 2 - pad + (w + 2 * pad) * i / 24, -h / 2 - pad + (rnd(seed + i) - 0.5) * 10]);
+  for (let i = 0; i <= 24; i++) pts.push([w / 2 + pad + (rnd(seed + 40 + i) - 0.5) * 8, -h / 2 - pad + (h + 2 * pad) * i / 24]);
+  for (let i = 0; i <= 24; i++) pts.push([w / 2 + pad - (w + 2 * pad) * i / 24, h / 2 + pad + (rnd(seed + 80 + i) - 0.5) * 10]);
+  for (let i = 0; i <= 24; i++) pts.push([-w / 2 - pad + (rnd(seed + 120 + i) - 0.5) * 8, h / 2 + pad - (h + 2 * pad) * i / 24]);
+  g.beginPath(); pts.forEach(([px, py], i) => (i ? g.lineTo(px, py) : g.moveTo(px, py))); g.closePath(); g.fill();
+  g.shadowColor = 'transparent'; rr(g, -w / 2, -h / 2, w, h, 10); g.save(); g.clip(); g.drawImage(im, -w / 2, -h / 2, w, h); g.restore();
+  g.fillStyle = 'rgba(158,232,255,.8)'; g.save(); g.translate(0, -h / 2 - pad); g.rotate(0.05); g.fillRect(-60, -18, 120, 36); g.restore();
+  if (credit) txt(g, credit, w / 2, h / 2 + pad + 22, "600 20px DEBody", 'rgba(255,255,255,.9)', 'right');
+  g.restore(); return h;
+}
+function ring(g, x, y, r, k, col = ORANGE) { if (k <= 0) return; g.save(); g.strokeStyle = col; g.lineWidth = 8; g.lineCap = 'round'; g.beginPath(); g.ellipse(x, y, r * 1.25, r, -0.08, -1.7, -1.7 + Math.PI * 2.05 * E(k)); g.stroke(); g.restore(); }
+
+// big word BEHIND the speaker (drawn on #bk, the cutout covers it where the person is)
+function behind(o, t) { const d = t - o.at; if (d < 0 || (o.until && t > o.until)) return;
+  const k = E(d / 0.45), g = gb; g.save(); g.globalAlpha = k; g.translate(W / 2, (o.y || 560) + 80 * (1 - k)); g.scale(1, 1);
+  g.font = `900 ${o.size || 260}px ${o.latin ? 'DELatin' : 'DEHead'}`; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.lineWidth = 18; g.strokeStyle = o.stroke || INK; g.strokeText(o.text, 0, 0); g.fillStyle = o.color || '#fff'; g.fillText(o.text, 0, 0); g.restore(); }
+// floating card (front layer), optional rings on details at given image-pixel coords
+function card(o, t) { const d = t - o.at; if (d < 0 || (o.until && t > o.until + 0.3)) return; const im = imgs[o.img];
+  const out = o.until ? E((t - o.until) / 0.3) : 0, k = E(d / 0.45) * (1 - out);
+  const h = tornCard(gi, im, o.x, o.y, o.w, o.rot || 0, k, o.seed || 3, o.credit);
+  for (const r of o.rings || []) { const s = o.w / im.width; gi.save(); gi.translate(o.x, o.y); gi.rotate(o.rot || 0);
+    ring(gi, -o.w / 2 + r.x * s, -h / 2 + r.y * s, r.r * s, (t - r.at) / 0.4); gi.restore(); } }
+// running checklist (top of frame): items appear and tick on the word, current one highlighted
+function list(o, t) { if (t < o.at || (o.until && t > o.until)) return; const g = gi, k0 = E((t - o.at) / 0.4);
+  g.save(); g.globalAlpha = k0; const x = o.x || 70, y0 = o.y || 120;
+  txt(g, o.title, x, y0, "800 46px DEHead", '#fff', 'left');
+  o.items.forEach((it, i) => { const y = y0 + 80 + i * 70, on = t >= it.at, cur = on && (i === o.items.length - 1 || t < o.items[i + 1].at);
+    g.globalAlpha = k0 * (on ? 1 : 0.45);
+    if (cur) { g.fillStyle = 'rgba(158,232,255,.95)'; rr(g, x - 14, y - 30, 560, 60, 14); g.fill(); }
+    g.strokeStyle = cur ? INK : '#fff'; g.lineWidth = 4; rr(g, x, y - 18, 36, 36, 8); g.stroke();
+    if (on) { const c = E((t - it.at) / 0.3); g.strokeStyle = cur ? BLUE : TEAL; g.lineWidth = 7; g.lineCap = 'round'; g.beginPath(); g.moveTo(x + 7, y); g.lineTo(x + 7 + 9 * c, y + 9 * c); if (c > 0.5) g.lineTo(x + 16 + 16 * (c - 0.5) * 2, y + 9 - 22 * (c - 0.5) * 2); g.stroke(); }
+    txt(g, it.text, x + 56, y, "700 38px DEBody", cur ? INK : '#fff', 'left'); });
+  g.restore(); }
+function badge(o, t) { const d = t - o.at; if (d < 0 || (o.until && t > o.until)) return; const k = POP(d), g = gi;
+  g.save(); g.translate(o.x, o.y); g.rotate(o.rot || -0.08); g.scale(0.7 + 0.3 * k, 0.7 + 0.3 * k); g.globalAlpha = clamp(d / 0.12);
+  g.font = `900 ${o.size || 96}px DEHead`; const tw = g.measureText(o.text).width + 80;
+  g.shadowColor = 'rgba(0,0,0,.3)'; g.shadowBlur = 20; g.shadowOffsetY = 8; g.fillStyle = o.bg || ORANGE; rr(g, -tw / 2, -(o.size || 96) * 0.72, tw, (o.size || 96) * 1.44, 22); g.fill();
+  g.shadowColor = 'transparent'; txt(g, o.text, 0, 4, `900 ${o.size || 96}px DEHead`, '#fff'); g.restore(); }
+function logo(o, t) { const d = t - o.at; if (d < 0 || (o.until && t > o.until)) return; const im = imgs[o.img], k = POP(d), h = o.h || 90, w = h * im.width / im.height, g = gi;
+  g.save(); g.globalAlpha = clamp(d / 0.15); g.translate(o.x, o.y); g.scale(0.8 + 0.2 * k, 0.8 + 0.2 * k);
+  g.shadowColor = 'rgba(0,0,0,.25)'; g.shadowBlur = 18; g.fillStyle = '#fff'; rr(g, -w / 2 - 34, -h / 2 - 24, w + 68, h + 48, (h + 48) / 2); g.fill();
+  g.shadowColor = 'transparent'; g.drawImage(im, -w / 2, -h / 2, w, h); g.restore(); }
+
+window.renderAt = async (t) => {
+  await Promise.all([seekV(V, t), seekV(C, t)]);
+  const s = D.segments.find((q) => t >= q.t0 && t < q.t1) || D.segments[D.segments.length - 1], f = faceAt(t);
+  const prev = D.segments[D.segments.indexOf(s) - 1], dt = t - s.t0;
+  const b = frame(s, f, t), a = prev ? frame(prev, f, t) : b, bl = prev && prev.layout !== s.layout ? E(dt / 0.22) : 1;
+  const m = {}; for (const p of ['top', 'h', 'tx', 'ty', 'sc']) m[p] = lerp(a[p], b[p], bl);
+  const hide = s.layout === 'cut';
+  for (const [el, v] of [[document.getElementById('spk'), V], [document.getElementById('cutw'), C]]) { el.style.display = hide ? 'none' : 'block'; placeVideo(el, v, m); }
+  document.getElementById('spk').style.filter = s.dim ? `brightness(${1 - 0.35 * E(dt / 0.4)}) blur(${s.blur ? 6 * E(dt / 0.4) : 0}px)` : 'none';
+  for (const g of [gb, gi]) { g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H); g.globalAlpha = 1; }
+  // behind layer: in split it lives in the speaker half only (clip), elsewhere full frame
+  if (s.behind) { gb.save(); if (s.layout === 'split') { gb.beginPath(); gb.rect(0, 960, W, 960); gb.clip(); } s.behind.forEach((o) => behind(o, t)); gb.restore(); }
+  if (s.layout === 'split' || s.layout === 'cut') {
+    const R = s.layout === 'cut' ? { y: 0, h: H } : { y: 0, h: 960 }, im = imgs[s.insert.img], zin = 1 + 0.05 * clamp(dt / (s.t1 - s.t0));
+    gi.save(); gi.beginPath(); gi.rect(0, R.y, W, R.h); gi.clip();
+    // blurred copy behind (ref: screen recording over a blurred copy of itself)
+    const cs = Math.max(W / im.width, R.h / im.height) * 1.1; gi.filter = 'blur(28px) brightness(.55)'; gi.drawImage(im, (W - im.width * cs) / 2, R.y + (R.h - im.height * cs) / 2, im.width * cs, im.height * cs); gi.filter = 'none';
+    const iw = (s.insert.w || 980) * zin, ih = iw * im.height / im.width;
+    gi.save(); gi.shadowColor = 'rgba(0,0,0,.45)'; gi.shadowBlur = 40; gi.shadowOffsetY = 16; rr(gi, (W - iw) / 2, R.y + (R.h - ih) / 2 + (s.insert.dy || 0), iw, ih, 22); gi.fillStyle = '#000'; gi.fill(); gi.restore();
+    rr(gi, (W - iw) / 2, R.y + (R.h - ih) / 2 + (s.insert.dy || 0), iw, ih, 22); gi.save(); gi.clip(); gi.drawImage(im, (W - iw) / 2, R.y + (R.h - ih) / 2 + (s.insert.dy || 0), iw, ih); gi.restore();
+    for (const r of s.insert.rings || []) { const sc = iw / im.width; ring(gi, (W - iw) / 2 + r.x * sc, R.y + (R.h - ih) / 2 + (s.insert.dy || 0) + r.y * sc, r.r * sc, (t - r.at) / 0.4); }
+    if (s.insert.credit) txt(gi, s.insert.credit, W - 40, R.y + R.h - 34, "600 22px DEBody", 'rgba(255,255,255,.85)', 'right');
+    gi.restore();
+    if (s.layout === 'split') seam(gi, 960, t, s.seed || 7);
+  }
+  (s.cards || []).forEach((o) => card(o, t)); (s.logos || []).forEach((o) => logo(o, t)); (s.badges || []).forEach((o) => badge(o, t));
+  if (s.list) list(s.list, t);
+  cap.el.style.top = (s.capY || 1760) + 'px';
+  cap.el.style.display = s.noCap ? 'none' : 'flex';
+  cap.renderAt(t);
+};
+</script></body></html>

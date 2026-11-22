@@ -1,11 +1,12 @@
-# Task: 3 background plates for an animated story reel, in the Data Echooo brand palette (image generation)
+# Task: 3 background plates for an animated story reel, in a neutral set with brand-blue accents (image generation)
 
 Generate 3 vertical images with your image generation tool. Save each as PNG in `out/story_brand/` (portrait 9:16 if possible, else 2:3, at least 1024 px wide).
 They are empty stage sets for a flat 2D animated short. Characters are drawn on top later by code, so leave the lower-middle area open as a floor/stage.
 A previous version was too dark and moody (navy night + orange lamps). The client wants their own brand mood instead: bright, clean, friendly, optimistic tech.
 
 ## Locked style (use verbatim at the start of every prompt)
-Flat 2D vector illustration background for a bright, friendly animated explainer, clean simple shapes, soft gentle gradients, no outlines, airy and optimistic. Strict palette: mostly very light ice blue and white (#F3F7FF, #FFFFFF) walls and floors, cobalt blue (#214AFF) as the main accent for furniture and big shapes, light sky blue (#9EE8FF) and teal (#00C2BB) as secondary accents, ONE small touch of orange (#FE4C1C) per scene, dark ink (#1A1B1E) only for tiny details. Soft daylight, gentle soft shadows, a subtle light grid or dot pattern on one wall is welcome. Calm, uncluttered, modern. No people, no characters, no readable text, no logos.
+<!-- toned-down CI, user 2026-11-13 (REF_SPEC 36); old all-cobalt paragraph retired -->
+Flat 2D vector illustration background for a calm, modern animated explainer, clean simple shapes, soft gentle gradients, no outlines. Palette: warm off-white and light warm grey walls (#F6F4EF, #E9E6DF), pale natural oak wood for floors and tables, soft charcoal grey (#4A4F5A) for chairs and dark details, a little muted sage green from plants. Cobalt blue (#214AFF) appears on only ONE or TWO small objects in the whole scene (e.g. one chair, one book, a screen frame). No other saturated colours except at most one tiny orange (#FE4C1C) detail. Soft daylight, gentle shadows. Calm, uncluttered. No people, no characters, no readable text, no logos.
 
 ## Plates
 1. `b01_kitchen.png` → a small diner kitchen: a steel dish sink with a stack of plates centre-left, a round wall clock, a window, one hanging lamp. Floor area open in the lower middle.

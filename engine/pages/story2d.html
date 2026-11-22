@@ -25,7 +25,7 @@ window.setup = async (data) => {
   await DE.injectFonts(D.brandBase);
   for (const [k, p] of Object.entries(D.plates)) imgs[k] = await DE.loadImage(J(p));
   logo = await DE.loadImage(J('brand:logo/DataEchooo-logo.png'));
-  cap = new DE.Captions(document.body, D.captions, { y: D.capY || 1400, size: 60, maxWidth: 960 });
+  cap = new DE.Captions(document.body, D.captions, Object.assign({ y: D.capY || 1400, size: 60, maxWidth: 960 }, D.captionStyle || {}));  // captionStyle {mode:'soft'} = lighter captions (REF_SPEC 37)
   await loadLayered(D.shots);
   for (const s of D.shots) for (const ph of s.photos || []) if (!PIMG[ph.img]) PIMG[ph.img] = await DE.loadImage(J(ph.img));
 };
@@ -238,11 +238,17 @@ function counter(o, t) {  // big data number (brand: "เสียงสะท�
   const v = o.from + (o.to - o.from) * (1 - Math.pow(1 - k, 4));
   const txt = (o.prefix || '') + (o.dec ? v.toFixed(o.dec) : Math.round(v).toLocaleString('en-US')) + (o.suffix || '');
   g.save(); g.globalAlpha = clamp((t - o.at) / 0.25); g.font = `900 ${o.size || 150}px DELatin`; g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.shadowColor = o.glow || TEAL; g.shadowBlur = 40; g.fillStyle = o.color || '#fff'; g.fillText(txt, o.x, o.y); g.shadowBlur = 0;
-  if (o.label) { g.font = "700 38px DEBody"; g.fillStyle = CREAM; g.fillText(o.label, o.x, o.y + (o.size || 150) * 0.62); }
+  if (o.d3) {  // big 3D-style number (REF_SPEC 47, from the Pinterest refs): stacked darker layers = depth, 1-2 per clip
+    const depth = Math.round(18 * clamp((t - o.at) / 0.4));
+    for (let i = depth; i > 0; i--) { g.fillStyle = i === depth ? 'rgba(0,0,0,.25)' : (o.side || DE.color.blueDark || '#0B1B66'); g.fillText(txt, o.x + i * 1.6, o.y + i * 2.2); }
+    g.lineWidth = 6; g.strokeStyle = '#fff'; g.strokeText(txt, o.x, o.y); g.fillStyle = o.color || '#fff'; g.fillText(txt, o.x, o.y);
+  } else { g.shadowColor = o.glow || TEAL; g.shadowBlur = 40; g.fillStyle = o.color || '#fff'; g.fillText(txt, o.x, o.y); g.shadowBlur = 0; }
+  if (o.label) { g.font = "700 38px DEBody"; const lw = g.measureText(o.label).width + 44, ly = o.y + (o.size || 150) * 0.66;
+    g.fillStyle = 'rgba(255,248,236,.94)'; g.beginPath(); g.roundRect(o.x - lw / 2, ly - 30, lw, 60, 30); g.fill(); g.fillStyle = DE.color.ink; g.fillText(o.label, o.x, ly + 2); }
   g.restore();
 }
 function card(o, t, t0, t1) {  // black interstitial text card, typed on (ref), our ink + cream + brand underline
+  if (o.style === 'paper') return paperCard(o, t, t0, t1);
   g.fillStyle = BLUE; g.fillRect(0, 0, W, H);
   const lines = o.lines, total = lines.join('').length, typed = Math.floor(total * clamp((t - t0) / (o.type || 1.2)));
   g.font = `700 ${o.size || 78}px DEHead`; g.textAlign = 'center'; g.textBaseline = 'middle';
@@ -253,13 +259,53 @@ function card(o, t, t0, t1) {  // black interstitial text card, typed on (ref), 
     if (o.hot === i && n === ln.length) { const w = g.measureText(ln).width; const k = E((t - t0 - (o.type || 1.2)) / 0.4); g.fillStyle = ORANGE; g.fillRect(W / 2 - w / 2, y + 52, w * k, 10); }
   });
 }
-function pill(t) {  // tension device (top): money runway
-  const P = D.pill; if (!P || t < P.from || t > P.to) return;
+// owner review 2026-11-22 (REF_SPEC 37): no flat all-blue card. 'paper' card = the shot's plate blurred and dimmed behind
+// a torn cream sheet; Thai words appear WORD by word (never letter by letter, which left half-typed words on screen).
+function paperCard(o, t, t0, t1) {
+  const pl = imgs[o.plate]; if (pl) { g.save(); g.filter = 'blur(18px) brightness(.6)'; const z = 1.08 + 0.04 * clamp((t - t0) / (t1 - t0)); g.drawImage(pl, W / 2 - W * z / 2, H / 2 - H * z / 2, W * z, H * z); g.restore(); g.filter = 'none'; }
+  else { g.fillStyle = DE.color.ink; g.fillRect(0, 0, W, H); }
+  const k = E((t - t0) / 0.4), lines = o.lines, size = o.size || 76, lh = size * 1.45, sh = lines.length * lh + 140, sw = 900, sx = (W - sw) / 2, sy = 960 - sh / 2 + 50 * (1 - k);
+  g.save(); g.globalAlpha = k; g.translate(W / 2, sy + sh / 2); g.rotate(-0.025); g.translate(-W / 2, -(sy + sh / 2));
+  g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 30; g.shadowOffsetY = 12; g.fillStyle = CREAM; g.beginPath();
+  const jag = (i) => (Math.sin(i * 12.9898) * 43758.5453 % 1) * 10;
+  g.moveTo(sx, sy); for (let i = 0; i <= 30; i++) g.lineTo(sx + sw * i / 30, sy + jag(i)); for (let i = 0; i <= 30; i++) g.lineTo(sx + sw - jag(i + 40), sy + sh * i / 30);
+  for (let i = 0; i <= 30; i++) g.lineTo(sx + sw - sw * i / 30, sy + sh - jag(i + 80)); for (let i = 0; i <= 30; i++) g.lineTo(sx + jag(i + 120), sy + sh - sh * i / 30);
+  g.closePath(); g.fill(); g.shadowColor = 'transparent';
+  g.fillStyle = 'rgba(158,232,255,.8)'; g.save(); g.translate(W / 2, sy); g.rotate(0.04); g.fillRect(-80, -20, 160, 40); g.restore();
+  const words = lines.map((ln) => ln.split(' ')), all = words.flat().length, shown = Math.ceil(all * clamp((t - t0 - 0.2) / (o.type || 1.0)));
+  g.font = `700 ${size}px DEHead`; g.textAlign = 'center'; g.textBaseline = 'middle'; let used = 0;
+  words.forEach((ws, i) => { const y = sy + 70 + lh / 2 + i * lh, n = clamp(shown - used, 0, ws.length); used += ws.length;
+    g.fillStyle = o.hot === i ? BLUE : DE.color.ink; g.fillText(ws.slice(0, n).join(' '), W / 2, y);
+    if (o.hot === i && n === ws.length) { const w = g.measureText(ws.join(' ')).width, kk = E((t - t0 - 0.2 - (o.type || 1.0)) / 0.4); g.fillStyle = ORANGE; g.fillRect(W / 2 - w / 2, y + size * 0.62, w * kk, 9); } });
+  g.restore();
+}
+// warm paper look (REF_SPEC 47, ref princegupta.ai Jensen reel): warm multiply tint + fixed paper grain (seeded, same every frame)
+let GRAIN = null, FOC = null;
+function paperGrade() {
+  if (!GRAIN) { GRAIN = document.createElement('canvas'); GRAIN.width = W; GRAIN.height = H; const q = GRAIN.getContext('2d'), r = DE.seeded(31), id = q.createImageData(W, H);
+    for (let i = 0; i < id.data.length; i += 4) { const v = 128 + (r() - 0.5) * 70; id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 255; }
+    q.putImageData(id, 0, 0); q.globalCompositeOperation = 'multiply'; q.fillStyle = 'rgba(0,0,0,0)';
+    for (let k = 0; k < 900; k++) { q.fillStyle = `rgba(120,95,60,${0.03 + r() * 0.05})`; q.fillRect(r() * W, r() * H, 1 + r() * 3, 20 + r() * 120); } }  // paper fibres
+  g.save(); g.globalCompositeOperation = 'multiply'; g.fillStyle = 'rgba(255,236,205,.55)'; g.fillRect(0, 0, W, H);
+  g.globalCompositeOperation = 'overlay'; g.globalAlpha = 0.22; g.drawImage(GRAIN, 0, 0); g.restore();
+}
+function dateChip(t) {  // date pinned top-left for the whole story (ref: "JUNE 2024" chip)
+  const L = D.dates; if (!L) return; let cur = null; for (const d of L) if (t >= d.t) cur = d; if (!cur) return;
+  const k = E((t - cur.t) / 0.3); g.save(); g.font = "700 34px DEBody"; const w = g.measureText(cur.text).width + 86, x = D.dateCenter ? (W - w) / 2 : 60, y = D.dateY || 150;
+  g.globalAlpha = 0.6 + 0.4 * k; g.fillStyle = DE.color.ink; g.beginPath(); g.roundRect(x, y, w, 62, 31); g.fill();
+  g.strokeStyle = '#fff'; g.lineWidth = 3; g.beginPath(); g.roundRect(x + 22, y + 18, 26, 26, 5); g.stroke(); g.beginPath(); g.moveTo(x + 22, y + 26); g.lineTo(x + 48, y + 26); g.stroke();
+  g.fillStyle = '#fff'; g.textBaseline = 'middle'; g.textAlign = 'left'; g.fillText(cur.text, x + 62, y + 32 + 2 * (1 - k)); g.restore();
+}
+function pill(t) {  // tension device (top): money runway. D.pill may be a list of windows: shown only while its topic is told (REF_SPEC 37)
+  for (const P of [].concat(D.pill || [])) pillOne(P, t);
+}
+function pillOne(P, t) {
+  if (!P || t < P.from || t > P.to) return;
   let v = P.values[0]; for (const x of P.values) if (t >= x.t) v = x;
   if (!v.text) return;
-  const k = E((t - P.from) / 0.4), hot = v.hot && Math.sin(t * 8) > 0;
+  const k = E((t - P.from) / 0.4) * (1 - E((t - P.to + 0.35) / 0.35)), hot = v.hot && Math.sin(t * 8) > 0;
   g.save(); g.globalAlpha = k; g.font = "700 32px DEBody"; const lw = g.measureText(P.label).width;
-  g.font = "900 40px DEHead"; const vw = g.measureText(v.text).width; const w = lw + vw + 90, x = (W - w) / 2, y = 380;
+  g.font = "900 40px DEHead"; const vw = g.measureText(v.text).width; const w = lw + vw + 90, x = (W - w) / 2, y = P.y || 380;
   g.shadowColor = 'rgba(33,74,255,.2)'; g.shadowBlur = 20; g.shadowOffsetY = 6; g.fillStyle = '#fff'; g.beginPath(); g.roundRect(x, y, w, 72, 36); g.fill(); g.shadowColor = 'transparent';
   g.strokeStyle = v.hot ? ORANGE : BLUE; g.lineWidth = 3; g.stroke();
   g.textBaseline = 'middle'; g.fillStyle = DE.color.ink; g.font = "700 32px DEBody"; g.fillText(P.label, x + 34, y + 38);
@@ -423,6 +469,14 @@ function drawShot(s, t) {  // draws one shot at time t into the current g
   g.restore();
   const vg = g.createRadialGradient(W / 2, H * 0.48, H * 0.28, W / 2, H * 0.5, H * 0.75); vg.addColorStop(0, 'rgba(33,74,255,0)'); vg.addColorStop(1, 'rgba(33,74,255,.10)');
   g.fillStyle = vg; g.fillRect(0, 0, W, H);
+  if (D.look === 'paper') paperGrade();
+  // focus (REF_SPEC 48): while a real image is up, the set behind it blurs and dims so the eye has ONE thing to read
+  const live = (s.photos || []).filter((o) => t >= o.at && (o.until === undefined || t <= o.until));
+  if (D.focus && live.length) { const k = E((t - Math.min(...live.map((o) => o.at))) / 0.35), cv = g.canvas;
+    if (!FOC) { FOC = document.createElement('canvas'); FOC.width = W; FOC.height = H; }
+    const q = FOC.getContext('2d'); q.setTransform(1, 0, 0, 1, 0, 0); q.filter = 'none'; q.clearRect(0, 0, W, H); q.drawImage(cv, 0, 0);
+    g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = k; g.filter = 'blur(14px)'; g.drawImage(FOC, 0, 0); g.filter = 'none';
+    g.fillStyle = 'rgba(40,30,20,.28)'; g.fillRect(0, 0, W, H); g.restore(); }
   for (const o of s.links || []) link(o, t, cam);
   if (s.chip) chip(s.chip, t);
   for (const o of s.tags || []) tag(o, t, cam);
@@ -467,8 +521,10 @@ window.renderAt = async (t) => {
   }
   g = MAIN; MAIN.globalAlpha = 1;
   pill(t);
-  // logo bug (brand link), top-right, quiet
-  if (!s.noLogo && !s.card && !s.rewind) { g.globalAlpha = 0.8; const lw = 150, lh = lw * logo.height / logo.width; g.drawImage(logo, W - 60 - lw, 300, lw, lh); g.globalAlpha = 1; }
+  if (!s.card && !s.rewind && !s.cta) dateChip(t);
+  if (D.handle && !s.cta) { g.save(); g.font = "600 26px DEBody"; g.textAlign = 'center'; g.fillStyle = 'rgba(26,27,30,.45)'; g.fillText(D.handle, W / 2, H - 120); g.restore(); }
+  // logo bug (brand link), quiet; D.logoY moves it (top captions need the top)
+  if (!s.noLogo && !s.card && !s.rewind) { g.globalAlpha = 0.8; const lw = 150, lh = lw * logo.height / logo.width; g.drawImage(logo, W - 60 - lw, D.logoY || 300, lw, lh); g.globalAlpha = 1; }
   cap.renderAt(t);
 };
 </script></body></html>

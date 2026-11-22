@@ -17,7 +17,7 @@ The ids `type1|type2|type3` and folder/file names (`jobs/type1_talkinghead/...`,
 - Default routing (user rule 2026-11-12, updated): ElevenLabs = voice + word timing only, never images or video,
   and always through the **ElevenLabs connector in Claude** (`creative_generate_speech`, `creative_transcribe_audio`), not an API key.
   Images = Codex CLI (`tools/run_codex.py`, inside a ChatGPT plan). Music = **Envato Elements** (connector `search_music`
-  finds tracks; the user downloads with their own Envato account into `library/audio/music/`). SFX = `library/audio`.
+  finds tracks; Claude downloads the pick by clicking through elements.envato.com in the built-in browser where the user is signed in, with a yes per file, into `library/audio/music/`). SFX = **Envato Elements** too (`search_sound_effects`, same browser download, into `library/audio/sfx_envato/`; user 2026-11-22). ElevenLabs makes voice only.
 - Never print, read aloud or commit an API key. Keys live in `~/.config/dataechooo/` only.
 
 ## Machine

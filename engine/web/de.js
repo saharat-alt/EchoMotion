@@ -85,6 +85,9 @@ DE.Captions = class {
     this.el.innerHTML = '';
     if (i < 0) return;
     const s = this.st, band = s.mode === 'band';
+    // lighter styles (owner review 2026-11-22, REF_SPEC 37: "Font หนาไป"): 'soft' = DEBody bold, white, soft shadow, no stroke;
+    // 'paper' = ink text on a cream paper strip, slight tilt (scrapbook look of the new เซฟพูด).
+    if (s.mode === 'soft' || s.mode === 'paper' || s.mode === 'thin' || s.mode === 'clean') return this.buildLight(i, s);
     const box = document.createElement('div');
     Object.assign(box.style, {
       maxWidth: s.maxWidth + 'px', textAlign: 'center', lineHeight: '1.45', padding: band ? (s.bandPad || '18px 40px 22px') : '0 20px',
@@ -108,6 +111,35 @@ DE.Captions = class {
         sp.style.color = band ? DE.color.blue : DE.color.sky;
         // never slant Thai: Thai fonts have no italic and the browser fakes it. Italic only for Latin words.
         if (w.hl === 'italic' && !/[฀-๿]/.test(w.text)) { sp.style.fontStyle = 'italic'; sp.style.fontWeight = 800; }
+      }
+      if (w.space) sp.style.marginLeft = '0.25em';
+      box.appendChild(sp);
+    }
+    this.el.appendChild(box);
+  }
+  buildLight(i, s) {
+    const paper = s.mode === 'paper', thin = s.mode === 'thin', clean = s.mode === 'clean', box = document.createElement('div');
+    Object.assign(box.style, {
+      maxWidth: s.maxWidth + 'px', textAlign: 'center', lineHeight: '1.4', transformOrigin: '50% 50%',
+      wordBreak: 'keep-all', overflowWrap: 'normal',
+      font: thin ? `700 ${s.size}px DEHead, DEBody, sans-serif` : `${s.weight || 700} ${s.size}px DEBody, DEHead, sans-serif`,  // thin = Kanit Bold (not Black) + 6 px stroke
+      color: paper || clean ? DE.color.ink : '#fff',
+      padding: paper ? '10px 30px 14px' : '0 20px',
+      background: paper ? DE.color.cream : 'none',
+      borderRadius: paper ? '6px' : '0',
+      boxShadow: paper ? '0 6px 18px rgba(0,0,0,.22)' : 'none',
+      textShadow: paper || clean ? 'none' : thin ? '0 4px 0 rgba(0,0,0,.25)' : '0 2px 10px rgba(0,0,0,.55), 0 0 2px rgba(0,0,0,.6)',
+      rotate: paper ? ((i % 2 ? 1 : -1) * 1.2) + 'deg' : '0deg',
+    });
+    for (const w of this.chunks[i].words) {
+      const sp = document.createElement('span');
+      sp.textContent = w.text; sp.style.display = 'inline-block';
+      if (thin) { sp.style.webkitTextStroke = '6px ' + DE.color.ink; sp.style.paintOrder = 'stroke fill'; }
+      if (w.hl && clean) { sp.style.background = DE.color.blue; sp.style.color = '#fff'; sp.style.padding = '0 12px'; sp.style.borderRadius = '8px'; }
+      else if (w.hl && thin && s.block) { sp.style.webkitTextStroke = '0'; sp.style.background = DE.color.blue; sp.style.color = '#fff'; sp.style.padding = '0 12px'; sp.style.borderRadius = '8px'; sp.style.textShadow = 'none'; }
+      else if (w.hl) {
+        if (paper) { sp.style.background = DE.color.sky; sp.style.padding = '0 6px'; sp.style.borderRadius = '4px'; }
+        else sp.style.color = DE.color.sky;
       }
       if (w.space) sp.style.marginLeft = '0.25em';
       box.appendChild(sp);

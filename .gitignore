@@ -23,3 +23,22 @@ node_modules/
 
 # drafts moved out of the repo (local only)
 _archive_local/
+
+# Envato SFX (licence per project, user 2026-11-22)
+library/audio/sfx_envato/
+
+# raw camera footage never goes in git (user 2026-11-22)
+jobs/**/input/raw/
+jobs/**/input/whisper/
+
+# 2026-11-22: macOS junk, raw-footage derivatives (เซฟพูด) and full-page screenshots we only crop from
+.DS_Store
+jobs/**/input/aroll.*
+jobs/type1_talkinghead/**/input/voice.wav
+jobs/**/assets/cutout.webm
+jobs/**/assets/cutout_*.png
+jobs/**/assets/web/*_full.png
+jobs/**/assets/web/*_top.png
+jobs/**/assets/web/blog_img*.png
+jobs/**/assets/docs/*_ipo.png
+jobs/**/assets/docs/claude_2023.png

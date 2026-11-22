@@ -50,10 +50,13 @@ safe zones, caption rules, sound roles and levels. Assets are swappable and must
   `pipelines/tts_elevenlabs.py` / `stt_elevenlabs.py` (API key) are fallback only.
 - **Free music is allowed (user 2026-11-12, REF_SPEC 32):** if Envato is not at hand, use a free licensed track (incompetech CC BY with credit worked); never a "Content ID Registered" track (Pixabay). The ElevenLabs connector makes no music.
 - **Music = Envato Elements connector** (`search_music`, filters: no vocals, mood, tempo, length). It only searches and returns
-  elements.envato.com links: show the user 3–5 candidates, they download the pick with their OWN Envato Elements account and save it as
-  `library/audio/music/envato_<artist>_<title>.wav`. Then measure steadiness / rank as in §2. Never commit Envato files.
+  elements.envato.com links: show the user 3–5 candidates; for the pick, Claude opens it in the built-in browser pane (user signed in to
+  Envato there), asks a yes per file (each download registers a licence to project "Data Echooo"), clicks Download in the page (never a
+  scripted fetch), and saves it as `library/audio/music/envato_<artist>_<title>.wav` (REF_SPEC 41). Then measure steadiness / rank as in §2. Never commit Envato files.
 - The three baseline finals keep their Artlist tracks (rebuild only); new jobs use Envato.
-- SFX unchanged: the repo library (`library/audio/sfx`, `foley`, `sfx_elevenlabs`).
+- **SFX = Envato Elements (user 2026-11-22, REF_SPEC 42):** connector `search_sound_effects`, downloaded the same way as music
+  (browser pane, yes per file) into `library/audio/sfx_envato/<role>_<title>.wav` (git-ignored, never committed). The repo library
+  (`library/audio/sfx`, `foley`) stays for baseline rebuilds and as a fallback. ElevenLabs makes voice only: no music, no SFX.
 
 ## Provider routing: scan, then offer (works on any machine; user rule 2026-11-12)
 Never hard-wire one provider. At the start of a job (or when a step needs voice, timing, images, music or SFX):
@@ -73,9 +76,18 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
 7. Artlist files are NOT in the repo (licence). `library/audio/ARTLIST_MANIFEST.md` lists every track/SFX used; a teammate
    downloads them with their own Artlist account into the same paths.
 
+## Owner review 2026-11-22 (REF_SPEC 37-39, plan in docs/FEEDBACK_2026-11-22.md)
+- เล่า Business: lighter caption style (no Kanit Black + thick stroke); no plain all-blue cards; `pill` only while its topic is told; Thai on cards appears by word, never letter by letter.
+- เล่าข่าว mascot: viseme mouths from word timing (not one squashed mouth); change gesture every 2-4 s on the word. Assets brief: docs/prompts/mascot_gestures.md.
+- เซฟพูด source = the raw 1080p landscape recordings (REF_SPEC 40), never th_sample.
+- **Refs first (REF_SPEC 45, user 2026-11-22):** every idea/use case/example comes from a real post or video where people did it, link + date in the fact table, collected BEFORE writing. Never invent scenarios.
+- **Hooks (REF_SPEC 46, user 2026-11-22):** open docs/HOOK_REFS.md first and collect how other channels hooked the same story; take a proven shape, put the news itself in it, ≤ 4 s, tease paid off in the clip.
+- Script tone (REF_SPEC 43-44): เล่าข่าว for viewers with zero tech knowledge (no jargon, one everyday example per fact, dumbify pass); เล่า Business told casually like to a friend, rounded numbers.
+- เซฟพูด: torn-paper (or pixel) split seam, not a straight line; person matte for text/effects behind the speaker and floating above the head; running highlighted list and floating cards like the IG refs.
+
 ## 0. Ground rules (all types)
 - **Paid services.**
-  - ElevenLabs: voice only (TTS + Scribe timing), through the Claude connector (user 2026-11-12). Music/SFX there were approved once. Never images or video.
+  - ElevenLabs: voice only (TTS + Scribe timing), through the Claude connector (user 2026-11-12). Never music, SFX, images or video (user 2026-11-22).
   - Images: Codex CLI inside the ChatGPT plan: `python tools/run_codex.py docs/prompts/<brief>.md <job-name>` (briefs in `docs/prompts/`).
   - Music (new jobs, user 2026-11-12): Envato Elements, downloaded by the user with their own account; never commit it.
   - Baseline music + SFX: Artlist (`download_track` records the licence). The baseline set: `library/audio/artlist_manifest.json` (Artlist ID + path; add every new Artlist file there). SFX: commit new ones to library/audio/sfx or foley. Music: download only with the current user's own Artlist account, never commit it.
@@ -144,6 +156,7 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
 
 ## 3. Render
 - `engine/render_par.py --page P --data D --out O --duration S --jobs 4`: same lossless PNG frames and x264 settings as render.py, split into parallel chunks and joined by stream copy, with a frame-count check. Type 3 v1: 61 s in 6 min.
+- story2d.html (WebGL gl-transitions) under parallel render_par on a busy Mac (2026-11-22, Anthropic job): 3-4 headless Chromium + WebGL slowed to ~10 s/frame and hit the 30 s screenshot timeout three times. Root cause found: one page slows down the longer it runs (2.2 fps at frame 450, 0.5 fps at 630, timeout at ~660), most likely WebGL resources in the transitions piling up. Fix that works: render in fresh 300-frame pieces one after another (render.py --start/--end each, then ffmpeg concat), never one long page. Pages without WebGL (talkinghead4) are fine with render_par.
 - `engine/render.py … --stills 1.5,8,20` for PNG stills. Always look at stills of every shot before a full render.
 - Pages: `window.setup(data)` + deterministic `window.renderAt(t)`. Reset canvas state (textAlign, shadows, dash) every frame. Video inside pages must be WebM/VP9.
 - QA: contact sheet + `blackdetect` + frames around every transition. Never claim done without looking.
@@ -167,12 +180,16 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
 5. Current job: `jobs/type2_news/2026-11-12_news_fable52` (plan_v8.json + splice_v8.json → deliverables/type2_news_fable52_v8.mp4).
 
 ## 5. Type 3 — เล่า Business: animated story (our CI, the ref's format)
+- **Look from 2026-11-22 (REF_SPEC 47):** princegupta.ai Jensen reel style: warm paper grain over the sets, date chip top-left for the whole story, captions on top (keyword in a colour block, never italic Thai), evidence as real documents. **Every insert is a real image** (Commons photo, article/filing screenshot via Playwright, official logo), credited. One big 3D-style number on the key figure. **One focal point at a time (REF_SPEC 48):** date chip + caption centred at the top (scene options dateCenter, captionStyle mode 'clean'), one object in the centre band, set blurred behind real images (focus:true), never a number and a photo together, no pill, no logo bug (handle text instead).
 - **Ref:** `refs/type3_yt` (not in git: https://www.youtube.com/watch?v=_MG4v3foET8, "How a Chinese Spy Got Inside Nvidia", Paper Billions; the audit docs hold what we took from it). Take its format, pacing and transitions (REF_TYPE3_AUDIT). Do **not** take its dark mood.
-  - Ours is bright Data Echooo: ice-white sets, cobalt main colour, sky/teal accents, one orange touch.
+  - Ours is bright Data Echooo, **CI toned down (user 2026-11-13, REF_SPEC 36):** sets are neutral (warm off-white/grey walls, light oak wood,
+    charcoal chairs, a little sage from plants); cobalt only on 1-2 small objects per plate, one tiny orange touch. The brand stays in the
+    overlays (tags, counters, pill, captions, logo bug, title card). Reason: all-cobalt sets (EP01) "เข้ากับ CI เกินไป".
+    Sample plates: `work/codex-jobs/type3-toned-samples/out/toned/n_*.png` (style N; style W warm/editorial was the alternative).
   - White pills with blue text, brand-blue name tags with leader lines, small colour logo bug.
 - **No mascot in type 3**, not even on the end card. The end card is the logo + orange "กดติดตาม" + the story's own cast waving.
 - **Cast:** `engine/web/toon.js`, round-head characters drawn in code (identical in every shot, blink, faces, poses, walk).
-- **Plates:** Codex, locked brand style paragraph (`docs/prompts/codex_type3_plates*.md`), empty sets with an open floor.
+- **Plates:** Codex, locked style paragraph N (toned-down CI) in `docs/prompts/codex_type3_plates.md`, empty sets with an open floor. Do not reuse the all-cobalt paragraph from older job briefs.
 - **Page:** `engine/pages/story2d.html`. Shot fields:
   - `plate`, `cam{z,x,y}`, `actors[keys]`, `props` (dish, tray, napkin, box, contract, check, chip, crowd), `fg` occluder
   - `chip`, `tags`, `counters`, `links`
