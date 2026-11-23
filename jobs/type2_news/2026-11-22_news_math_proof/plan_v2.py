@@ -3,6 +3,7 @@ Voice: Safe, one take, sped up 12 % (input/voice.wav), times from local Whisper 
 Rules applied: REF_SPEC 43 (non-tech), 45 (every insert is a real ref: Al Jazeera / Clay / GitHub pages, Commons photos),
 46 (hook), 48 (one focal point at a time, centred), 38 (mascot: viseme mouths + a gesture change every 2-4 s).
 The hook keeps the generated line (user 2026-11-23: "เอาตามเดิมไปก่อน"), with an on-screen "ยังรอการยืนยัน" tag.
+v2.1 (user 2026-11-23: hook voice "ตื่นเต้นไปหน่อย ดูไม่ใช่เซฟ"): calmer hook take spliced into input/voice.wav (old: voice_excited_hook.wav), hook cut 2.2 -> 2.85 s on the new "167 ปี".
 v2 (user 2026-11-23 on v1: "ใช้ภาพประกอบในการเล่าเรื่องเยอะๆ", paper quotes "มาเล็กๆจิ๋วๆ มองยาก"): real quotes re-shot in large type (bq_*, 1000 px wide),
 explainer pictures on every hard idea (primes, 1 of 7, paper tower, computer check, water flow, 2-year wait).
 usage: python plan_v2.py && python ../../../pipelines/news/build_shots.py . plan_v2.json"""
@@ -44,8 +45,8 @@ def big(d, y, at=0, hl=0.35): return doc(d, y=y, at=at, hl=hl, w=1000, rot=-1)  
 def ill(img, w, y, at=0, rot=0): return photo(img, w=w, y=y, at=at, rot=rot)        # exact diagrams drawn in code, on a paper print
 T_LIT, T_PRIZE, T_TOWER, T_PC, T_WATER = 11.52, 14.59, 26.09, 28.64, 34.95          # word times (input/words.json): แต่จริงๆ, รางวัล, 250,000, ให้คอมพิวเตอร์, ไหลของน้ำ
 # hook (<= 4.4 s): the number on frame 0, then the person's own words, tagged as a claim
-shot(0, 2.2, [num(167, suf=" ปี", y=560, size=240, bg="#111", ink="#FFF8EC")])
-shot(2.2, S(1), [big("bq_alpoge", y=330), card("ยังรอการยืนยัน", y=830, at=0.4, size=48, bg="#FE4C1C", ink="#FFF8EC", rot=3)], src="Al Jazeera 21 พ.ย. 2026", sfx="shutter")
+shot(0, 2.85, [num(167, suf=" ปี", y=560, size=240, bg="#111", ink="#FFF8EC")])
+shot(2.85, S(1), [big("bq_alpoge", y=330), card("ยังรอการยืนยัน", y=830, at=0.4, size=48, bg="#FE4C1C", ink="#FFF8EC", rot=3)], src="Al Jazeera 21 พ.ย. 2026", sfx="shutter")
 shot(S(1), S(2), [big("bq_noread", y=280)], src="Al Jazeera 21 พ.ย. 2026", sfx="shutter")
 # what the problem is: the real line, then a picture of "primes look random but have order"
 shot(S(2), S(3), [big("bq_1859", y=280)], src="Al Jazeera", sfx="shutter")
