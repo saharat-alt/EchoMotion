@@ -459,6 +459,8 @@ function drawShot(s, t) {  // draws one shot at time t into the current g
   if (s.layered) { drawLayered(s, t); return; }
   // camera: slow push toward a focus point (plate coords), z = zoom; punch-out dives in at the end
   let z = kv(s.cam?.z ?? [1.0, 1.06], E(k)), fx = kv(s.cam?.x ?? 540, E(k)), fy = kv(s.cam?.y ?? 960, E(k));
+  // keep the view inside the plate: a focus point near an edge used to show the bare page as a light strip (EP02 v5 QA, 2026-11-24)
+  z = Math.max(z, 1); fx = clamp(fx, W / 2 / z, W - W / 2 / z); fy = clamp(fy, H / 2 / z, H - H / 2 / z);
   const cam = (x, y) => [(x - fx) * z + W / 2, (y - fy) * z + H / 2];
   g.save(); g.translate(W / 2, H / 2); g.scale(z, z); g.translate(-fx, -fy);
   g.drawImage(imgs[s.plate], 0, 0, W, H);

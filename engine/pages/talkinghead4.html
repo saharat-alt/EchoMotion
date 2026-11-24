@@ -99,15 +99,16 @@ function card(o, t) { const d = t - o.at; if (d < 0 || (o.until && t > o.until +
   for (const r of o.rings || []) { const s = o.w / im.width; gi.save(); gi.translate(o.x, o.y); gi.rotate(o.rot || 0);
     ring(gi, -o.w / 2 + r.x * s, -h / 2 + r.y * s, r.r * s, (t - r.at) / 0.4); gi.restore(); } }
 // running checklist (top of frame): items appear and tick on the word, current one highlighted
-function list(o, t) { if (t < o.at || (o.until && t > o.until)) return; const g = gi, k0 = E((t - o.at) / 0.4);
-  g.save(); g.globalAlpha = k0; const x = o.x || 70, y0 = o.y || 120;
-  txt(g, o.title, x, y0, "800 46px DEHead", '#fff', 'left');
-  o.items.forEach((it, i) => { const y = y0 + 80 + i * 70, on = t >= it.at, cur = on && (i === o.items.length - 1 || t < o.items[i + 1].at);
-    g.globalAlpha = k0 * (on ? 1 : 0.45);
-    if (cur) { g.fillStyle = 'rgba(158,232,255,.95)'; rr(g, x - 14, y - 30, 560, 60, 14); g.fill(); }
-    g.strokeStyle = cur ? INK : '#fff'; g.lineWidth = 4; rr(g, x, y - 18, 36, 36, 8); g.stroke();
-    if (on) { const c = E((t - it.at) / 0.3); g.strokeStyle = cur ? BLUE : TEAL; g.lineWidth = 7; g.lineCap = 'round'; g.beginPath(); g.moveTo(x + 7, y); g.lineTo(x + 7 + 9 * c, y + 9 * c); if (c > 0.5) g.lineTo(x + 16 + 16 * (c - 0.5) * 2, y + 9 - 22 * (c - 0.5) * 2); g.stroke(); }
-    txt(g, it.text, x + 56, y, "700 38px DEBody", cur ? INK : '#fff', 'left'); });
+function list(o, t) {   // running list (IG ref reel 2 "20 video styles"): current item on yellow, items not reached yet are blank slots
+  if (t < o.at || (o.until && t > o.until)) return; const g = gi, k0 = E((t - o.at) / 0.4), x = o.x || 60, y0 = o.y || 120, w = o.w || 480, rh = o.rh || 76;
+  g.save(); g.globalAlpha = k0;
+  if (o.title) { g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 14; txt(g, o.title, x, y0, "800 44px DEHead", '#fff', 'left'); g.shadowColor = 'transparent'; }
+  o.items.forEach((it, i) => { const y = y0 + (o.title ? 78 : 0) + i * rh, on = t >= it.at, cur = on && (i === o.items.length - 1 || t < o.items[i + 1].at);
+    const ki = on ? E((t - it.at) / 0.25) : 0;
+    g.fillStyle = cur ? '#FFD43B' : on ? 'rgba(255,255,255,.92)' : 'rgba(255,255,255,.22)';
+    g.shadowColor = 'rgba(0,0,0,.25)'; g.shadowBlur = on ? 16 : 0; g.shadowOffsetY = 6; rr(g, x, y, w, rh - 14, 16); g.fill(); g.shadowColor = 'transparent';
+    txt(g, String(i + 1), x + 34, y + (rh - 14) / 2 + 2, "900 38px DELatin", on ? INK : 'rgba(255,255,255,.6)');
+    if (on) { g.save(); g.globalAlpha = k0 * ki; txt(g, it.text, x + 70, y + (rh - 14) / 2 + 2, `${cur ? 800 : 700} ${o.size || 36}px DEHead`, INK, 'left'); g.restore(); } });
   g.restore(); }
 function badge(o, t) { const d = t - o.at; if (d < 0 || (o.until && t > o.until)) return; const k = POP(d), g = gi;
   g.save(); g.translate(o.x, o.y); g.rotate(o.rot || -0.08); g.scale(0.7 + 0.3 * k, 0.7 + 0.3 * k); g.globalAlpha = clamp(d / 0.12);
@@ -140,6 +141,8 @@ window.renderAt = async (t) => {
     let iw = (s.insert.w || 980) * zin, ih = iw * im.height / im.width; const maxH = R.h - 220; if (ih > maxH) { ih = maxH; iw = ih * im.width / im.height; }
     gi.save(); gi.shadowColor = 'rgba(0,0,0,.45)'; gi.shadowBlur = 40; gi.shadowOffsetY = 16; rr(gi, (W - iw) / 2, R.y + (R.h - ih) / 2 + (s.insert.dy || 0), iw, ih, 22); gi.fillStyle = '#000'; gi.fill(); gi.restore();
     rr(gi, (W - iw) / 2, R.y + (R.h - ih) / 2 + (s.insert.dy || 0), iw, ih, 22); gi.save(); gi.clip(); gi.drawImage(im, (W - iw) / 2, R.y + (R.h - ih) / 2 + (s.insert.dy || 0), iw, ih); gi.restore();
+    if (s.insert.phone) { const px = (W - iw) / 2 - 22, py = R.y + (R.h - ih) / 2 + (s.insert.dy || 0) - 22; gi.save(); gi.lineWidth = 22; gi.strokeStyle = '#111'; rr(gi, px, py, iw + 44, ih + 44, 64); gi.stroke();
+      gi.fillStyle = '#111'; rr(gi, W / 2 - 70, py + 12, 140, 30, 15); gi.fill(); gi.restore(); }
     for (const r of s.insert.rings || []) { const sc = iw / im.width; ring(gi, (W - iw) / 2 + r.x * sc, R.y + (R.h - ih) / 2 + (s.insert.dy || 0) + r.y * sc, r.r * sc, (t - r.at) / 0.4); }
     if (s.insert.credit) txt(gi, s.insert.credit, W - 40, R.y + R.h - 34, "600 22px DEBody", 'rgba(255,255,255,.85)', 'right');
     gi.restore();

@@ -1,0 +1,162 @@
+{
+ "theme": null,
+ "format": "wav",
+ "formats": [
+  "wav"
+ ],
+ "sounds": [
+  {
+   "name": "sweep",
+   "file": "sweep.wav",
+   "files": [
+    "sweep.wav"
+   ],
+   "sound": "whoosh/sweep",
+   "dur_s": 0.424,
+   "lufs_max": -15.2,
+   "loop": false,
+   "ok": true,
+   "member": {
+    "n": 1,
+    "of": 1,
+    "recording": "recording 1 of 1"
+   }
+  },
+  {
+   "name": "sweep_2",
+   "file": "sweep_2.wav",
+   "files": [
+    "sweep_2.wav"
+   ],
+   "sound": "whoosh/sweep",
+   "dur_s": 0.42,
+   "lufs_max": -15.0,
+   "loop": false,
+   "ok": true,
+   "member": {
+    "n": 1,
+    "of": 1,
+    "recording": "recording 1 of 1"
+   }
+  },
+  {
+   "name": "thump",
+   "file": "thump.wav",
+   "files": [
+    "thump.wav"
+   ],
+   "sound": "thump/door",
+   "dur_s": 0.205,
+   "lufs_max": -23.5,
+   "loop": false,
+   "ok": true,
+   "member": {
+    "n": 1,
+    "of": 2,
+    "recording": "recording 1 of 2"
+   }
+  },
+  {
+   "name": "thump_2",
+   "file": "thump_2.wav",
+   "files": [
+    "thump_2.wav"
+   ],
+   "sound": "thump/door",
+   "dur_s": 0.204,
+   "lufs_max": -25.2,
+   "loop": false,
+   "ok": true,
+   "member": {
+    "n": 2,
+    "of": 2,
+    "recording": "recording 2 of 2"
+   }
+  },
+  {
+   "name": "keytick",
+   "file": "keytick.wav",
+   "files": [
+    "keytick.wav"
+   ],
+   "sound": "tick/key",
+   "dur_s": 0.07,
+   "lufs_max": -20.2,
+   "loop": false,
+   "ok": true,
+   "member": {
+    "n": 1,
+    "of": 2,
+    "recording": "recording 1 of 2"
+   }
+  },
+  {
+   "name": "keytick_2",
+   "file": "keytick_2.wav",
+   "files": [
+    "keytick_2.wav"
+   ],
+   "sound": "tick/key",
+   "dur_s": 0.054,
+   "lufs_max": -22.2,
+   "loop": false,
+   "ok": true,
+   "member": {
+    "n": 2,
+    "of": 2,
+    "recording": "recording 2 of 2"
+   }
+  },
+  {
+   "name": "title",
+   "file": "title.wav",
+   "files": [
+    "title.wav"
+   ],
+   "sound": "title/bag",
+   "dur_s": 0.464,
+   "lufs_max": -19.2,
+   "loop": false,
+   "ok": true,
+   "member": {
+    "n": 1,
+    "of": 1,
+    "recording": "recording 1 of 1"
+   }
+  },
+  {
+   "name": "logohit",
+   "file": "logohit.wav",
+   "files": [
+    "logohit.wav"
+   ],
+   "sound": "logo/bag",
+   "dur_s": 0.472,
+   "lufs_max": -21.0,
+   "loop": false,
+   "ok": true,
+   "member": {
+    "n": 1,
+    "of": 1,
+    "recording": "recording 1 of 1"
+   }
+  },
+  {
+   "name": "slide",
+   "file": "slide.wav",
+   "files": [
+    "slide.wav"
+   ],
+   "sound": "slide/paper",
+   "dur_s": 0.316,
+   "lufs_max": -16.5,
+   "loop": false,
+   "ok": true,
+   "member": {
+    "n": 1,
+    "of": 1,
+    "recording": "recording 1 of 1"
+   }
+  }
+ ]
+}

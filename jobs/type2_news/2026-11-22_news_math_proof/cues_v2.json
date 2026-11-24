@@ -1,0 +1,97 @@
+[
+ {
+  "t": 0.12,
+  "sfx": "title",
+  "db": -9,
+  "align": "peak"
+ },
+ {
+  "t": 3.2,
+  "sfx": "keytick",
+  "db": -10
+ },
+ {
+  "t": 4.8,
+  "sfx": "keytick",
+  "db": -10
+ },
+ {
+  "t": 6.59,
+  "sfx": "sweep",
+  "db": -16,
+  "align": "peak"
+ },
+ {
+  "t": 6.9399999999999995,
+  "sfx": "keytick",
+  "db": -10
+ },
+ {
+  "t": 13.23,
+  "sfx": "sweep",
+  "db": -16,
+  "align": "peak"
+ },
+ {
+  "t": 14.79,
+  "sfx": "keytick",
+  "db": -10
+ },
+ {
+  "t": 16.23,
+  "sfx": "sweep",
+  "db": -16,
+  "align": "peak"
+ },
+ {
+  "t": 21.07,
+  "sfx": "keytick",
+  "db": -10
+ },
+ {
+  "t": 23.64,
+  "sfx": "sweep",
+  "db": -16,
+  "align": "peak"
+ },
+ {
+  "t": 30.64,
+  "sfx": "sweep",
+  "db": -16,
+  "align": "peak"
+ },
+ {
+  "t": 36.0,
+  "sfx": "sweep",
+  "db": -16,
+  "align": "peak"
+ },
+ {
+  "t": 44.35,
+  "sfx": "keytick",
+  "db": -10
+ },
+ {
+  "t": 54.71,
+  "sfx": "sweep",
+  "db": -16,
+  "align": "peak"
+ },
+ {
+  "t": 58.96,
+  "sfx": "sweep",
+  "db": -16,
+  "align": "peak"
+ },
+ {
+  "t": 63.64,
+  "sfx": "logohit",
+  "db": -8,
+  "align": "peak"
+ },
+ {
+  "t": 63.79,
+  "sfx": "thump",
+  "db": -6
+ }
+]

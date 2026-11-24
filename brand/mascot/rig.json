@@ -16,7 +16,8 @@
     253,
     212,
     186
-   ]
+   ],
+   "nomouth": "poses/arms_crossed_nm.png"
   },
   "bye": {
    "file": "poses/bye.png",
@@ -24,7 +25,8 @@
     253,
     206,
     178
-   ]
+   ],
+   "nomouth": "poses/bye_nm.png"
   },
   "chin": {
    "file": "poses/chin.png",
@@ -32,7 +34,8 @@
     253,
     209,
     182
-   ]
+   ],
+   "nomouth": "poses/chin_nm.png"
   },
   "count_1": {
    "file": "poses/count_1.png",
@@ -40,7 +43,8 @@
     253,
     211,
     186
-   ]
+   ],
+   "nomouth": "poses/count_1_nm.png"
   },
   "count_2": {
    "file": "poses/count_2.png",
@@ -48,7 +52,8 @@
     254,
     209,
     182
-   ]
+   ],
+   "nomouth": "poses/count_2_nm.png"
   },
   "count_3": {
    "file": "poses/count_3.png",
@@ -56,7 +61,8 @@
     253,
     211,
     185
-   ]
+   ],
+   "nomouth": "poses/count_3_nm.png"
   },
   "explain": {
    "file": "poses/explain.png",
@@ -64,7 +70,8 @@
     253,
     214,
     188
-   ]
+   ],
+   "nomouth": "poses/explain_nm.png"
   },
   "hold_card": {
    "file": "poses/hold_card.png",
@@ -72,7 +79,8 @@
     253,
     211,
     184
-   ]
+   ],
+   "nomouth": "poses/hold_card_nm.png"
   },
   "ok": {
    "file": "poses/ok.png",
@@ -80,7 +88,8 @@
     253,
     208,
     181
-   ]
+   ],
+   "nomouth": "poses/ok_nm.png"
   },
   "phone": {
    "file": "poses/phone.png",
@@ -88,7 +97,8 @@
     254,
     208,
     181
-   ]
+   ],
+   "nomouth": "poses/phone_nm.png"
   },
   "point_side": {
    "file": "poses/point_side.png",
@@ -96,7 +106,8 @@
     253,
     207,
     180
-   ]
+   ],
+   "nomouth": "poses/point_side_nm.png"
   },
   "point_up": {
    "file": "poses/point_up.png",
@@ -104,7 +115,8 @@
     253,
     209,
     182
-   ]
+   ],
+   "nomouth": "poses/point_up_nm.png"
   },
   "shrug": {
    "file": "poses/shrug.png",
@@ -112,7 +124,8 @@
     253,
     208,
     180
-   ]
+   ],
+   "nomouth": "poses/shrug_nm.png"
   },
   "wow": {
    "file": "poses/wow.png",
@@ -120,7 +133,8 @@
     222,
     163,
     138
-   ]
+   ],
+   "nomouth": "poses/wow_nm.png"
   }
  },
  "visemes": [

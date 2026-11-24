@@ -54,9 +54,15 @@ safe zones, caption rules, sound roles and levels. Assets are swappable and must
   Envato there), asks a yes per file (each download registers a licence to project "Data Echooo"), clicks Download in the page (never a
   scripted fetch), and saves it as `library/audio/music/envato_<artist>_<title>.wav` (REF_SPEC 41). Then measure steadiness / rank as in §2. Never commit Envato files.
 - The three baseline finals keep their Artlist tracks (rebuild only); new jobs use Envato.
-- **SFX = Envato Elements (user 2026-11-22, REF_SPEC 42):** connector `search_sound_effects`, downloaded the same way as music
-  (browser pane, yes per file) into `library/audio/sfx_envato/<role>_<title>.wav` (git-ignored, never committed). The repo library
-  (`library/audio/sfx`, `foley`) stays for baseline rebuilds and as a fallback. ElevenLabs makes voice only: no music, no SFX.
+- **SFX = earshot, no downloads (user 2026-11-24, REF_SPEC 60; replaces REF_SPEC 42 for SFX):** never download sound effects
+  (no Envato `search_sound_effects`, no Artlist, no ElevenLabs). Make each role from words with earshot 1.0:
+  `.venv python -m earshot make "a soft paper swish" -o library/audio/sfx_earshot/swish_paper.wav` (free, local, seconds).
+  Name files by the mixer's role (`whoosh.wav`, `whoosh_2.wav` … for round-robin variants, `--seed` per variant) and mix with
+  `--sfx-dir library/audio/sfx_earshot`. Ours, so commit them; add the `make` line per file to library/README.md.
+  A thing the catalogue lacks: `earshot build "..."` (see the earshot skill). The repo library (`library/audio/sfx`, `foley`)
+  stays only for rebuilding the baseline finals. Music still comes from Envato (above).
+- **Listening = earshot, always (user 2026-11-24):** every judgement of sound goes through earshot before it is reported:
+  rank music candidates, `find` trims, `realness`/`describe` on a made SFX, `critique` on every mix. Quote the numbers.
 
 ## Provider routing: scan, then offer (works on any machine; user rule 2026-11-12)
 Never hard-wire one provider. At the start of a job (or when a step needs voice, timing, images, music or SFX):
@@ -91,6 +97,13 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
 - Hook voice (REF_SPEC 55, 2026-11-23): no `[excited]` tag; Safe's hooks are `[conversational]`. Fix only the hook by regenerating that line, atempo to the old span, re-time with Whisper, re-render piece 0.
 - เล่า Business layout (REF_SPEC 56, 2026-11-24): captions capY ≈ 1470, no date chip, handle None; photos centred ≈ y 900, cast feet above ~1420. Render-piece retry must check the frame count, not just a non-empty file.
 - เล่าข่าว look (REF_SPEC 57-58, 2026-11-24): `look: minimal`, no desk plates, `grid.tints` per section (grid/dots/none + glow), orange only on the CTA; end with the quick follow line + logo + กดติดตาม button.
+- เล่าข่าว use cases (REF_SPEC 59, 2026-11-24): only for mass AI updates people can use (e.g. a new model that makes good 3D), each from a real overseas community example with its source. News with nothing to try (a maths proof) has no use-case part.
+- **เล่าข่าว topics (REF_SPEC 62, user 2026-11-24):** AI news only. Before pitching, read the newest `jobs/type2_news/*/spoken.txt` + `REFS.md` (format, topics done). Vague brief → ask one short question first, never guess the niche.
+- **เล่า Business topics (REF_SPEC 63, user 2026-11-24):** AI business stories only (Data Echooo is AI-focused and runs AI workshops), told through real numbers, ending in a lesson businesses can use. Check `jobs/type3_story/` for topics already done.
+- **No second-hand news (REF_SPEC 64, user 2026-11-24):** pitch only first-hand stories (own announcement/filing, or the outlet that broke it). Re-writes of someone else's report or PR (e.g. a Thai site summarising a vendor survey) stay off the shortlist. Every pick: first-hand + overseas origin + (mass interest OR useful to followers).
+- **Copy only approved work (REF_SPEC 65, user 2026-11-24):** take structure/wording/look only from the baseline finals and REF_SPEC rules. Clips still in review (even in deliverables/final/) are not templates; ask if unsure.
+- เล่า Business owner notes on EP02 (REF_SPEC 61, 2026-11-24, not applied yet): no name tag + leader line over faces; sets per story beat, not office/boardroom on repeat; SFX from earshot; music bed must be clearly audible (old -24 dB bed read as no music).
+- REF_SPEC 62-64 (2026-11-24): mascot mouth via painted-out poses (no skin oval, old blink off); เซฟพูด = last clean take + graphics only from the owner's IG refs (rounded card, running list yellow/blank, phone mockup); sound = few earshot film SFX, audible steady Envato bed (14-18 dB under voice), earshot critique every mix.
 - เล่า Business next tone: docs/REF_BUSINESS_2026-11-24.md (photoreal muted sets, serif words on the beat, one floating object per idea, keep the look-alike toon cast). Not applied yet.
 
 ## 0. Ground rules (all types)
@@ -141,10 +154,10 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
     - เล่าข่าว: RedLionProduction "Funk" `envato_redlionproduction_funk.wav` (120 BPM, 1 s std 0.73 dB)
     - เล่า Business: FlorewsMusic "For Documentaries" `envato_florewsmusic_for-documentaries.wav` (90 BPM, 1.80 dB, mix very quiet like type 3)
     - เซฟพูด: Denisdrummer85 "Curious" `envato_denisdrummer85_curious.wav` (105 BPM, 2.14 dB)
-    - Not yet checked by ear (earshot not installed): the user listens on the first job and can swap.
+    - Rank against the ref with earshot on the next job that uses each one; the user can still swap.
   - Type 2 baseline: Ariel Shalom "Groove Express" from 0:42.
   - Type 3: light instrumental underscore with NO heavy beat, like the ref (user 2026-11-12). Particels (pizzicato, childlike) was rejected; funk/hip-hop beds are for type 2 only. Pick: Dor Ben Lulu "Moments Apart" from 0:29 (closest to the ref by earshot), mixed VERY quiet (`--music-db -24 --duck-db -6`). Transitions approved by the user: gl-transitions (MIT) Directional + real motion blur (sub-frame average) for place changes, CrossZoom for zoom punch, Overexposure for white flash; plain cut on phrase starts everywhere else.
-- **SFX:** real Artlist recordings in `library/audio/sfx/` (LICENSE.txt maps role → title). Roles:
+- **SFX:** made with earshot into `library/audio/sfx_earshot/` (new jobs); the baseline finals keep the Artlist recordings in `library/audio/sfx/` (LICENSE.txt maps role → title). Roles:
   - whoosh ×4 variants, swish_paper, paper, pen, pop/pop_2, logo, click, counter, shutter
   - stab, swell, tick, rewind, chime
 - **Type 2 cues** (`engine/cues.py news`):
@@ -160,7 +173,7 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
   - voice EQ; round-robin variants ±4 % pitch
   - `--music-mute "t0-t1,…"` for voice-only tension
   - final −14 LUFS
-  - After a mix (if earshot is installed: `python tools/setup.py --earshot`): `<.venv python> -m earshot critique <mp4>` (see the earshot skill). If it is not installed, say the sound was not checked by ear.
+  - After every mix: `<.venv python> -m earshot critique <mp4>` (see the earshot skill) and report its numbers. earshot is required (`python tools/setup.py --earshot`); if a machine lacks it, install it before mixing.
 
 ## 3. Render
 - `engine/render_par.py --page P --data D --out O --duration S --jobs 4`: same lossless PNG frames and x264 settings as render.py, split into parallel chunks and joined by stream copy, with a frame-count check. Type 3 v1: 61 s in 6 min.
@@ -242,8 +255,8 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
 
 ## 7. Folders, library, finalizing (user rule 2026-11-12)
 - Jobs by type: `jobs/type1_talkinghead/`, `jobs/type2_news/`, `jobs/type3_story/` → `<YYYY-MM-DD>_<slug>/` (input/, assets/, out/, scripts, scene/plan files).
-- Shared sounds live in `library/audio/` (music = full licensed tracks with a mood table in `library/README.md`; sfx = Artlist roles; sfx_elevenlabs = older ElevenLabs set, the only SFX in the repo without Artlist). Every new licensed/generated music or SFX goes there, never only inside a job. Add a row to library/README.md.
-- Mixer: `--sfx-dir library/audio/sfx`. Music level default −15 dB / duck −6 dB (user: v7 music was too loud at −12/−4).
+- Shared sounds live in `library/audio/` (music = full licensed tracks with a mood table in `library/README.md`; sfx = Artlist roles (baseline only); sfx_earshot = earshot-made roles (new jobs); sfx_elevenlabs = older ElevenLabs set, the only SFX in the repo without Artlist). Every new licensed/generated music or SFX goes there, never only inside a job. Add a row to library/README.md.
+- Mixer: `--sfx-dir library/audio/sfx_earshot` (new jobs; `library/audio/sfx` for baseline rebuilds). Music level default −15 dB / duck −6 dB (user: v7 music was too loud at −12/−4).
 - **Finals folder (user 2026-11-12, REF_SPEC 33):** one flat folder `deliverables/final/`: `EPxx_<ชื่อคลิปภาษาไทย>.mp4` + `EPxx_ปก.png` per clip, next EP number each time; nothing else in it (post caption stays in the job).
 - **When the user calls a clip final:** `python tools/finalize_job.py <job> <final.mp4>` (dry run) → show the list → run with `--yes`. It deletes unused drafts, renders, stills, QA sheets, stems, old plan/scene versions and voice test takes; keeps the final, its picture, the newest plan/scene/cues, scripts and input/.
 - Paxa voice consistency: generate the whole script in ONE call (per-line calls at temperature 0.7 drift: pitch 107-152 Hz vs the approved 182 Hz sample, user heard "not the voice I chose"). Check median pitch against the approved sample before building.

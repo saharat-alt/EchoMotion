@@ -1,0 +1,189 @@
+[
+ {
+  "t": 0.0,
+  "sfx": "thump",
+  "db": -6
+ },
+ {
+  "t": 2.52,
+  "sfx": "sweep",
+  "db": -15,
+  "align": "peak"
+ },
+ {
+  "t": 4.72,
+  "sfx": "counter",
+  "db": -18,
+  "dur": 0.9
+ },
+ {
+  "t": 6.1000000000000005,
+  "sfx": "tapestop",
+  "db": -20
+ },
+ {
+  "t": 8.24,
+  "sfx": "rewind",
+  "db": -15
+ },
+ {
+  "t": 10.0,
+  "sfx": "sweep",
+  "db": -15,
+  "align": "peak"
+ },
+ {
+  "t": 10.05,
+  "sfx": "thump",
+  "db": -6
+ },
+ {
+  "t": 16.38,
+  "sfx": "counter",
+  "db": -18,
+  "dur": 0.7
+ },
+ {
+  "t": 17.5,
+  "sfx": "sweep",
+  "db": -15,
+  "align": "peak"
+ },
+ {
+  "t": 21.54,
+  "sfx": "sweep",
+  "db": -15,
+  "align": "peak"
+ },
+ {
+  "t": 23.44,
+  "sfx": "thump",
+  "db": -6
+ },
+ {
+  "t": 24.48,
+  "sfx": "sweep",
+  "db": -15,
+  "align": "peak"
+ },
+ {
+  "t": 24.68,
+  "sfx": "thump",
+  "db": -6
+ },
+ {
+  "t": 28.66,
+  "sfx": "thump",
+  "db": -6
+ },
+ {
+  "t": 30.0,
+  "sfx": "sweep",
+  "db": -15,
+  "align": "peak"
+ },
+ {
+  "t": 33.6,
+  "sfx": "counter",
+  "db": -18,
+  "dur": 0.9
+ },
+ {
+  "t": 36.699999999999996,
+  "sfx": "counter",
+  "db": -18,
+  "dur": 1.0
+ },
+ {
+  "t": 38.5,
+  "sfx": "sweep",
+  "db": -15,
+  "align": "peak"
+ },
+ {
+  "t": 41.38,
+  "sfx": "counter",
+  "db": -18,
+  "dur": 0.9
+ },
+ {
+  "t": 42.42,
+  "sfx": "sweep",
+  "db": -15,
+  "align": "peak"
+ },
+ {
+  "t": 42.52,
+  "sfx": "thump",
+  "db": -6
+ },
+ {
+  "t": 55.18,
+  "sfx": "thump",
+  "db": -6
+ },
+ {
+  "t": 59.66,
+  "sfx": "counter",
+  "db": -18,
+  "dur": 0.7
+ },
+ {
+  "t": 62.18,
+  "sfx": "thump",
+  "db": -6
+ },
+ {
+  "t": 63.41,
+  "sfx": "counter",
+  "db": -18,
+  "dur": 0.9
+ },
+ {
+  "t": 65.22,
+  "sfx": "counter",
+  "db": -18,
+  "dur": 0.6
+ },
+ {
+  "t": 68.0,
+  "sfx": "sweep",
+  "db": -15,
+  "align": "peak"
+ },
+ {
+  "t": 68.0,
+  "sfx": "stab",
+  "db": -18
+ },
+ {
+  "t": 72.86,
+  "sfx": "sweep",
+  "db": -15,
+  "align": "peak"
+ },
+ {
+  "t": 73.06,
+  "sfx": "counter",
+  "db": -18,
+  "dur": 0.7
+ },
+ {
+  "t": 81.34,
+  "sfx": "counter",
+  "db": -18,
+  "dur": 0.9
+ },
+ {
+  "t": 82.3,
+  "sfx": "sweep",
+  "db": -15,
+  "align": "peak"
+ },
+ {
+  "t": 93.96,
+  "sfx": "logohit",
+  "db": -8,
+  "align": "peak"
+ }
+]

@@ -205,13 +205,16 @@ DE.Mascot = class {
       g.save(); g.filter = 'blur(3px) brightness(0) invert(1) sepia(1) hue-rotate(160deg) saturate(4)'; g.globalAlpha = 0.55;
       g.drawImage(base, -8 * S * 2, -6 * S * 2, W, H); g.restore();
     }
-    g.drawImage(base, 0, 0, W, H);
+    // rig v2: while a viseme shows, draw the pose with its own mouth painted out (engine/tools/mascot_nomouth.py) instead of
+    // a flat skin oval over it (the oval never matched the face: "ปากเป็นวงกลมมันเป็นวงๆ", user 2026-11-23, REF_SPEC 62)
+    const vNow = (img.rig && o.visemes) ? (() => { const tt = Math.floor(t * 15) / 15; let v = 'rest'; for (const q of o.visemes) { if (q.t > tt) break; v = q.v; } return v; })() : 'rest';
+    g.drawImage(vNow !== 'rest' && img[pose + '__nm'] ? img[pose + '__nm'] : base, 0, 0, W, H);
     if (img.rig && o.visemes) {  // rig v2 (REF_SPEC 38): the pose's own closed mouth is covered by a skin patch, then the
       // viseme picked from the spoken sound is drawn on twos (15 fps) with a tiny squash on change; 'rest' keeps the drawn smile
       const R = img.rig, m = R.mouth, sk = (R.poses[pose] || {}).skin || [245, 205, 180];
       const tt = Math.floor(t * 15) / 15; let v = 'rest', vt = 0; for (const q of o.visemes) { if (q.t > tt) break; v = q.v; vt = q.t; }
       if (v !== 'rest' && img.vis[v]) {
-        g.fillStyle = `rgb(${sk[0]},${sk[1]},${sk[2]})`; g.beginPath(); g.ellipse(m.cx * S, (m.cy + m.h * 0.12) * S, m.w * 0.62 * S, m.h * 0.42 * S, 0, 0, Math.PI * 2); g.fill();
+        if (!img[pose + '__nm']) { g.fillStyle = `rgb(${sk[0]},${sk[1]},${sk[2]})`; g.beginPath(); g.ellipse(m.cx * S, (m.cy + m.h * 0.12) * S, m.w * 0.62 * S, m.h * 0.42 * S, 0, 0, Math.PI * 2); g.fill(); }
         const im = img.vis[v], pop = 1 + 0.08 * (1 - DE.clamp((tt - vt) / 0.1));
         g.save(); g.translate(m.cx * S, (m.cy + m.h * 0.08) * S); g.scale(pop, 1 / pop); g.drawImage(im, -im.width * S / 2, -im.height * S / 2, im.width * S, im.height * S); g.restore();
       }
@@ -224,7 +227,7 @@ DE.Mascot = class {
       g.drawImage(th ? img.mouthThumbs : img.mouthWave, 0, 0, W, H); g.restore();
     }
     const blink = this.blinks.some((b) => t >= b && t < b + 0.1) || (em && em.type === 'happy');
-    if (blink) g.drawImage(img.eyes, 0, 0, W, H);
+    if (blink && !img.rig) g.drawImage(img.eyes, 0, 0, W, H);   // the old eyes overlay does not line up with rig v2 poses (double glasses + frown)
     g.restore();
   }
 };
@@ -233,7 +236,7 @@ DE.Mascot = class {
 DE.loadMascotRig = async function (base) {
   const m = base + '/mascot/', x = new XMLHttpRequest(); x.open('GET', m + 'rig.json', false); x.send();  // file:// pages: XHR works where fetch does not
   const R = JSON.parse(x.responseText), out = await DE.loadMascot(base);
-  for (const [k, p] of Object.entries(R.poses)) out[k] = await DE.loadImage(m + p.file);
+  for (const [k, p] of Object.entries(R.poses)) { out[k] = await DE.loadImage(m + p.file); if (p.nomouth) out[k + '__nm'] = await DE.loadImage(m + p.nomouth); }
   out.vis = {}; for (const v of R.visemes) out.vis[v] = await DE.loadImage(m + 'visemes/' + v + '.png');
   out.rig = R; return out;
 };
