@@ -89,6 +89,7 @@ Never hard-wire one provider. At the start of a job (or when a step needs voice,
 - เล่าข่าว mascot (REF_SPEC 52, 2026-11-23): no loudness-driven tilt/stretch with rig v2 (de.js `rig` branch); QA the head region by phase correlation, median ≈ 0 px/frame.
 - Finals + covers (REF_SPEC 53-54, 2026-11-23): `deliverables/final/EPxx_<title>.mp4` + `EPxx_ปก.png`, Western thumbnail look via `tools/make_covers.py`; director pass checks set vs line and caption readability (`captionStyle.halo`).
 - Hook voice (REF_SPEC 55, 2026-11-23): no `[excited]` tag; Safe's hooks are `[conversational]`. Fix only the hook by regenerating that line, atempo to the old span, re-time with Whisper, re-render piece 0.
+- เล่า Business layout (REF_SPEC 56, 2026-11-24): captions capY ≈ 1470, no date chip, handle None; photos centred ≈ y 900, cast feet above ~1420. Render-piece retry must check the frame count, not just a non-empty file.
 
 ## 0. Ground rules (all types)
 - **Paid services.**
