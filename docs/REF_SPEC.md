@@ -160,3 +160,25 @@ Type 3 story
    - Music bed clearly audible: about 14-18 dB under the voice, about -34 dBFS between lines (old EP02 was -29 dB under / -48 dBFS = "no music"). mix.py `--music-db -10..-15 --duck-db -6`.
    - Pick the bed by measured steadiness (1 s loudness std over the used window, < 1.5 dB): Funk from 20 s = 0.47 dB; Curious = 4.4 dB (not steady, out for เซฟพูด).
    - Check every mix with `earshot critique`. On talking clips its "too many salient hits" comes from the voice itself (voice stem alone 2.16/s), not the SFX.
+65. Logos (user, 2026-11-24): logo 1 = the white wordmark (`brand/logo/DataEchooo-logo-WH.png`) as a watermark on EVERY clip at the same place: brand.json `logo.watermark` (top-right x 900 y 240, w 140, 75 %, soft shadow), applied after the mix with `engine/tools/watermark.py --until <end card start>` (hidden on the end card). Logo 2 = the blue circle (`brand/logo/Primary_DataEchooo.png`, brand.json `logo.end_card`) on every end card. Other brands' logos keep their own proportions: never draw a square logo into a wide box (EP02 Claude logo was 420x140 from a 512x512 file: "โลโก้ไม่บีบแบบนั้น").
+66. Every price or amount on screen and in captions carries its unit (user, 2026-11-24 on EP02: "หุ้นละแปดสิบสาม อะไรไม่เห็นบอก แปดสิบสามรูปีหรอ"): when the voice drops the unit, show it on screen ($83 + "ราคาขายจริงต่อหุ้น").
+67. เล่า Business mood (user, 2026-11-24 on EP02 v6: "แบ็กกราวด์มู้ดโทนมันแปลกๆ", "เพลงห่วย", "ซาวด์เอฟเฟกต์กาก"): with photoreal muted sets the cartoon cast is graded toward the set (`toonGrade`), and the end card sits on a dark blurred set (`ctaDark`), not the bright brand grid. Music and SFX follow the refs as earshot heard them (r2/r5: light pizzicato/celesta "inspirational corporate" bed with no heavy beat, few standout sounds that are short pops/dings on key moments, cuts carried by the music): pick the bed by ranking Envato candidates against the ref audio with earshot, not by name.
+68. Director pass on EP02/EP03/EP04 (2026-11-24, self-check as the owner's gate; every item names its ref or rule):
+   - เล่า Business SFX palette = what earshot hears in the owner's refs r2/r5 (work/refs_business, timeline 2026-11-24), one sound per picture event:
+     a heavy thing or the big 3D number lands -> low hit `thump` (r5 0:00.32 boot stomps, r5 0:29.07 boot + label);
+     a label, print or small number pops on -> `msgpop` (r5 0:05.65 name label "Elias Howe", r2 0:02.22, r2 0:10.94);
+     a key word, name or logo is revealed, or a word card stands alone -> `ding` (r2 0:06.80, r2 0:13.92, r5 0:19.70, r5 0:26.01);
+     a move into a new place -> `sweep`, about one per 25 s (r2 0:03.48 is the only whoosh in 26 s); logo -> `logohit` (rule 64).
+     Out, because no ref has them: counter ratchets, tape stop, tape rewind, stab, clock tick, a whoosh on every push, music drop-outs
+     (refs: 0 % silence). Job script: jobs/type3_story/2026-11-22_anthropic_ipo/make_cues_v7.py (each cue carries its ref in `why`).
+     Levels: standout sounds about +13..+17 dB over the bed (refs median +16/+17 dB); music 14-18 dB under the voice (rule 64).
+   - Drawn props (crowd, cash) get the cast's `toonGrade` too (rule 67), and a flashback (`rewind`) runs over a dark blurred set
+     (`rewind.plate`), not a flat brand-blue card (rules 37, 67).
+   - A number never sits on a head or on busy set detail: EP02 "+34%" (was on the investor's hair) and "7 คน" (was on the box and plant) moved to the plain wall (rules 48, 54, 56).
+   - Captions carry the unit too: "หุ้นละ $83" (rule 66).
+   - Mascot mouth paint-out (`engine/tools/mascot_nomouth.py`): a dark line that leaves the search region is not the mouth; the old mask
+     also erased a piece of the chin outline, the lower glasses rim and the chin-pose finger (seen at full size on EP03 v7).
+   - Watermark clearance (rule 65: fixed at x 900-1040, y 240-340): our own overlay text and short cards stay out of that box
+     (EP04 "Pomelli" 230 -> 190 px, URL badge x 540 -> 480, ideas card 60 px lower). Cards 1000 px wide and taller than ~700 px still run
+     under it (EP04 landing / DNA / edit screens): open question for the owner.
+   - เซฟพูด inserts: the Home screen shown whole was unreadable (text about 11 px); crop to the prompt box being talked about (rule 49).

@@ -1,0 +1,155 @@
+[
+ {
+  "t": 0.0,
+  "sfx": "thump",
+  "db": -6,
+  "why": "news photo lands (r5 0:00.32)"
+ },
+ {
+  "t": 4.72,
+  "sfx": "thump",
+  "db": -6,
+  "why": "number -$104B lands heavy (r5 0:29.07)"
+ },
+ {
+  "t": 6.5,
+  "sfx": "ding",
+  "db": -9,
+  "why": "word card alone (r2 0:06.80)"
+ },
+ {
+  "t": 8.24,
+  "sfx": "sweep",
+  "db": -15,
+  "align": "peak",
+  "why": "flashback tunnel (r2 0:03.48)"
+ },
+ {
+  "t": 10.05,
+  "sfx": "msgpop",
+  "db": -11,
+  "why": "print pops on (r5 0:05.65)"
+ },
+ {
+  "t": 16.4,
+  "sfx": "msgpop",
+  "db": -11,
+  "why": "number 7 คน pops on (r5 0:05.65)"
+ },
+ {
+  "t": 23.44,
+  "sfx": "ding",
+  "db": -9,
+  "why": "name / logo revealed (r5 0:19.70)"
+ },
+ {
+  "t": 24.68,
+  "sfx": "msgpop",
+  "db": -11,
+  "why": "print pops on (r5 0:05.65)"
+ },
+ {
+  "t": 28.66,
+  "sfx": "ding",
+  "db": -9,
+  "why": "name / logo revealed (r5 0:19.70)"
+ },
+ {
+  "t": 33.62,
+  "sfx": "msgpop",
+  "db": -11,
+  "why": "number $183B pops on (r5 0:05.65)"
+ },
+ {
+  "t": 36.7,
+  "sfx": "thump",
+  "db": -6,
+  "why": "number $965B lands heavy (r5 0:29.07)"
+ },
+ {
+  "t": 41.4,
+  "sfx": "msgpop",
+  "db": -11,
+  "why": "number $33.2B pops on (r5 0:05.65)"
+ },
+ {
+  "t": 42.42,
+  "sfx": "sweep",
+  "db": -15,
+  "align": "peak",
+  "why": "into IPO day (r2 0:03.48)"
+ },
+ {
+  "t": 50.2,
+  "sfx": "msgpop",
+  "db": -11,
+  "why": "crowd pops on (r2 0:10.94)"
+ },
+ {
+  "t": 52.84,
+  "sfx": "ding",
+  "db": -9,
+  "why": "number $83 key figure (r2 0:13.92)"
+ },
+ {
+  "t": 55.18,
+  "sfx": "msgpop",
+  "db": -11,
+  "why": "print pops on (r5 0:05.65)"
+ },
+ {
+  "t": 59.68,
+  "sfx": "ding",
+  "db": -9,
+  "why": "number +34% key figure (r2 0:13.92)"
+ },
+ {
+  "t": 62.18,
+  "sfx": "msgpop",
+  "db": -11,
+  "why": "print pops on (r5 0:05.65)"
+ },
+ {
+  "t": 63.41,
+  "sfx": "thump",
+  "db": -6,
+  "why": "number $81B lands heavy (r5 0:29.07)"
+ },
+ {
+  "t": 65.24,
+  "sfx": "msgpop",
+  "db": -11,
+  "why": "number $75B pops on (r5 0:05.65)"
+ },
+ {
+  "t": 68.0,
+  "sfx": "sweep",
+  "db": -15,
+  "align": "peak",
+  "why": "the turn: price slides (r2 0:03.48)"
+ },
+ {
+  "t": 73.08,
+  "sfx": "msgpop",
+  "db": -11,
+  "why": "number -$104B pops on (r5 0:05.65)"
+ },
+ {
+  "t": 81.34,
+  "sfx": "thump",
+  "db": -6,
+  "why": "number $900B lands heavy (r5 0:29.07)"
+ },
+ {
+  "t": 87.61,
+  "sfx": "ding",
+  "db": -9,
+  "why": "word card alone (r2 0:06.80)"
+ },
+ {
+  "t": 94.01,
+  "sfx": "logohit",
+  "db": -8,
+  "why": "logo on the end card (REF_SPEC 64)"
+ }
+]

@@ -19,10 +19,6 @@ CAP = """โจทย์เลขที่ไม่มีใคร / แก้�
 วันที่ 20 พ.ย. / Levent Alpöge / นักคณิตศาสตร์ของ Anthropic / บอกว่าเขาพิสูจน์ได้แล้ว / โดยทำงานกับ Claude
 แต่ถ้าเขียนออกมา / เป็นภาษาคน / จะยาวกว่า 250,000 หน้า / เขาเลยปล่อยเป็นโค้ด / ให้คอมพิวเตอร์ตรวจทีละขั้นแทน
 วันเดียวกัน เขากับเพื่อน / ยังปล่อยอีกโจทย์ล้านดอลลาร์ / เรื่องสมการการไหลของน้ำ
-แล้วคนในวงการว่ายังไง / ลองฟัง 3 ประโยคนี้
-หนึ่ง Brian Conrey บอกว่า / ไม่คิดว่าจะมีมนุษย์คนไหนหาเจอ
-สอง Kevin Buzzard บอกว่า / เรายังไม่รู้เลยว่ามันจริงเพราะอะไร
-สาม Andrew Sutherland / จาก MIT ที่ลองรันโค้ดเอง / บอกว่า / นี่คือชัยชนะของมนุษย์
 ตอนนี้ยังไม่ได้ / เงินรางวัลนะ / ต้องรอคนในวงการยอมรับอย่างน้อย 2 ปี
 คิดว่าใครควรได้เครดิต AI หรือคน / คอมเมนต์บอกหน่อยครับ
 อย่าลืมกดติดตาม Data Echooo / ไว้ด้วยนะครับ"""
@@ -71,24 +67,18 @@ shot(T_PC, S(9), [cut("assets/ill/ill_laptop_check.png", w=860, y=380), card("�
 shot(S(9), T_WATER - 0.8, [ill("assets/ill/seven_navier.png", w=860, y=230, rot=-1)], sfx="paper")
 shot(T_WATER - 0.8, S(10), [cut("assets/ill/ill_water_swirl.png", w=680, y=380), card("Navier–Stokes", y=250, at=0.3, size=54, bg="#111", ink="#FFF8EC", rot=-2, w=520)], sfx="swish_paper")
 # three voices (the mascot hosts in the centre for the bridge)
-shot(S(10), S(11), [card("1 · 2 · 3", y=520, size=120, rot=-2)], sfx="riser")
-shot(S(11), S(12), [photo("assets/photos/conrey.jpg", w=440, y=300), card("“I don't think any human was about to find this”", y=820, at=1.4, size=54, w=940, rot=-1)],
-     src="AFP via phys.org 20 พ.ย. 2026 · ภาพ: Sandrobt (CC BY-SA 3.0)", sfx="shutter")
-shot(S(12), S(13), [big("bq_buzzard", y=250)], src="Al Jazeera 21 พ.ย. 2026", sfx="shutter")
-shot(S(13), S(14), [card("“to me this is a human triumph, and a day for celebration”", y=460, size=66, w=940, rot=-2), card("Andrew Sutherland · MIT", y=900, at=0.8, size=50, bg="#111", ink="#FFF8EC", rot=2)],
-     src="Scientific American 20 พ.ย. 2026", sfx="whoosh")
 # where it stands + CTA
 shot(S(14), S(15), [ill("assets/ill/wait_2y.png", w=1000, y=380, rot=-1)], src="claymath.org")
 shot(S(15), END, [card("AI <span style='color:#FE4C1C'>หรือ</span> คน?", y=300, size=120, rot=-3),   # follow line (user 2026-11-24: "อย่าลืมกดติดตาม Data Echooo ... พูดไวๆ")
-                   photo("brand:logo/DataEchooo-logo.png", w=340, y=560, at=round(S(17) + 0.8 - S(15), 2), rot=0),
+                   cut("brand:logo/Primary_DataEchooo.png", w=300, y=560, at=round(S(17) + 0.8 - S(15), 2)),   # end card = logo 2
                    card("<div style='text-align:center'>กดติดตาม</div>", y=930, at=round(S(17) + 1.0 - S(15), 2), size=58, bg="#111", ink="#FFFFFF", w=380)], sfx="chime")
 
 # ---- mascot: gesture every 2-4 s on the word, centre host on the bridge and the CTA
 POSES = [(0, "wow"), (S(1), "shrug"), (S(2), "point_up"), (S(3), "explain"), (S(4), "point_side"), (S(5), "ok"), (S(6), "point_side"), (S(6) + 2.6, "hold_card"),
          (S(7), "wow"), (S(8), "phone"), (S(9), "point_side"), (S(10), "explain"), (S(11), "count_1"), (S(12), "count_2"), (S(13), "count_3"),
          (S(14), "chin"), (S(15), "arms_crossed"), (S(16), "point_up"), (S(17), "bye")]
-moves = [{"t": S(10) - 0.2, "x": 540, "y": 2110, "scale": 0.74}, {"t": S(11) - 0.1, "x": 830, "y": 2010, "scale": 0.56},
-         {"t": S(15) - 0.2, "x": 540, "y": 2110, "scale": 0.74}]
+# v3.1 (user 2026-11-24 "ตัดออกไป ไม่เห็นต้องมาเกริ่น มาดูสามประโยคนี้"): the expert-quote section (S(10)-S(14)) is cut from the voice; its shots and host move are gone
+moves = [{"t": S(15) - 0.2, "x": 540, "y": 2110, "scale": 0.74}]
 
 # ---- visemes from the timed Thai text: each Whisper token's characters spread over its time, vowel/consonant -> mouth shape
 V_OF = {}

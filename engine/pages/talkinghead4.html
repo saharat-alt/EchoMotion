@@ -117,7 +117,7 @@ function badge(o, t) { const d = t - o.at; if (d < 0 || (o.until && t > o.until)
   g.shadowColor = 'transparent'; txt(g, o.text, 0, 4, `900 ${o.size || 96}px DEHead`, '#fff'); g.restore(); }
 function logo(o, t) { const d = t - o.at; if (d < 0 || (o.until && t > o.until)) return; const im = imgs[o.img], k = POP(d), h = o.h || 90, w = h * im.width / im.height, g = gi;
   g.save(); g.globalAlpha = clamp(d / 0.15); g.translate(o.x, o.y); g.scale(0.8 + 0.2 * k, 0.8 + 0.2 * k);
-  g.shadowColor = 'rgba(0,0,0,.25)'; g.shadowBlur = 18; g.fillStyle = '#fff'; rr(g, -w / 2 - 34, -h / 2 - 24, w + 68, h + 48, (h + 48) / 2); g.fill();
+  if (!o.plain) { g.shadowColor = 'rgba(0,0,0,.25)'; g.shadowBlur = 18; g.fillStyle = '#fff'; rr(g, -w / 2 - 34, -h / 2 - 24, w + 68, h + 48, (h + 48) / 2); g.fill(); } else { g.shadowColor = 'rgba(0,0,0,.3)'; g.shadowBlur = 24; g.shadowOffsetY = 8; }
   g.shadowColor = 'transparent'; g.drawImage(im, -w / 2, -h / 2, w, h); g.restore(); }
 
 window.renderAt = async (t) => {

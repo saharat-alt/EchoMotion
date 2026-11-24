@@ -32,11 +32,12 @@ def P(i): return EDL[i]["t0"]
 
 CR = "ภาพ: Google (blog.google)"
 IM = {k: f"assets/web/{v}.png" for k, v in {"dna": "z_dna", "colors": "z_colors", "fonts": "z_fonts", "images": "z_images",
-                                           "ideas": "ui_ideas", "ideas4": "z_ideas2", "landing_full": "ui_landing", "poster": "z_poster", "edit": "z_edit"}.items()}
-IM["logo"] = "../../../brand/logo/DataEchooo-logo.png"
+                                           "ideas": "z_prompt", "ideas4": "z_ideas2",   # v5.1: the prompt box only (REF_SPEC 49: the part of the screen being talked about, cropped tight and big; the whole Home screen was unreadable)
+                                           "landing_full": "ui_landing", "poster": "z_poster", "edit": "z_edit"}.items()}
+IM["logo"] = "../../../brand/logo/Primary_DataEchooo.png"   # end card = logo 2 (user 2026-11-24)
 S = []
 def seg(t0, t1, layout, **kw): S.append(dict(t0=round(t0, 3), t1=round(t1, 3), layout=layout, **kw))
-WORD = dict(y=380, size=230, color="#FFFFFF")    # big word in the free space ABOVE the head (all 3 IG refs), never over the face
+WORD = dict(y=380, size=230, color="#FFFFFF")   # v6: "Pomelli" 190 px and the URL badge x 480 so neither runs under the watermark (x 900-1040)    # big word in the free space ABOVE the head (all 3 IG refs), never over the face
 # v3 (user 2026-11-24: "การเล่าโมชั่นกราฟิกอินเสิร์ตการส่งเสริมการเล่าเรื่องห่วยมาก" + "ห้ามคิดเอง ... มีเรฟ"): every element follows
 # Safe's 3 IG refs (docs/FEEDBACK_2026-11-22.md §3): reel 2 "20 video styles" = speaker small bottom-right, rounded real-content
 # card on top, running numbered list with the current item yellow and items not reached yet blank; reel 3 ask.kenji = phone mockup.
@@ -46,7 +47,7 @@ LIST = {"x": 60, "y": 1230, "w": 500, "rh": 78, "size": 34, "items": [
     {"at": F3, "text": "แต่งรูปแค่พิมพ์สั่ง"}, {"at": F4, "text": "ใช้ฟรี"}]}
 def L(): return dict(LIST, at=F1)
 CARD = lambda img, w, dy=-420, **k: dict({"img": img, "w": w, "dy": dy, "credit": CR}, **k)
-seg(0, P(1), "full", zoom=1.0, behind=[dict(WORD, text="Pomelli", latin=True, at=T("คุมโทนแบรนด์ด้วย") + 0.6)])
+seg(0, P(1), "full", zoom=1.0, behind=[dict(WORD, text="Pomelli", latin=True, size=190, at=T("คุมโทนแบรนด์ด้วย") + 0.6)])
 seg(P(1), P(2), "full", zoom=1.1)                                   # jump cut 100 -> 110 %
 seg(P(2), P(3), "full", zoom=1.0)
 seg(P(3), P(4), "full", zoom=1.1, behind=[dict(WORD, text="3 วัน", color="#FE4C1C", size=260, at=T("ปวดหัวไป 3 วัน") + 0.55)])
@@ -58,14 +59,14 @@ seg(mid, T("และสไตล์ของแบรนด์"), "pip", capY=1
 seg(T("และสไตล์ของแบรนด์"), T("ไม่ต้องมานั่งเซ็ต"), "pip", capY=1110, insert=CARD("images", 460, -430), list=L())
 seg(T("ไม่ต้องมานั่งเซ็ต"), P(7), "full", zoom=1.1)
 seg(P(7), P(8), "pip", capY=1110, insert=CARD("ideas", 1000), list=L())
-seg(P(8), P(9), "pip", capY=1110, insert=CARD("ideas4", 1000), list=L())
+seg(P(8), P(9), "pip", capY=1110, insert=CARD("ideas4", 1000, -360), list=L())   # v6: card top below the watermark (brand.json logo.watermark y 240-340, REF_SPEC 65)
 seg(P(9), T("เราสามารถพิมพ์ให้"), "pip", capY=1110, insert=CARD("poster", 430, -440), list=L())
 seg(T("เราสามารถพิมพ์ให้"), T("เหมือนคุยกับกราฟิก"), "pip", capY=1110, insert=CARD("edit", 960), list=L())
 seg(T("เหมือนคุยกับกราฟิก"), P(10), "pip", capY=1110, insert=CARD("poster", 400, -440, phone=True), list=L())   # phone mockup (reel 3)
 seg(P(10), P(11), "full", zoom=1.0, behind=[dict(WORD, text="ฟรี", color="#FE4C1C", size=320, at=T("ฟรีอีกด้วยครับ") + 0.45)])
-seg(P(11), P(12), "full", zoom=1.1, badges=[{"text": "labs.google/pomelli", "at": P(11) + 0.4, "x": 540, "y": 380, "size": 64, "bg": "#1A1B1E", "rot": -0.04}])
-seg(P(12), DUR, "full", zoom=1.0, logos=[{"img": "logo", "at": P(13), "x": 540, "y": 300, "h": 110}],
-    badges=[{"text": "กดติดตาม", "at": T("กดติดตาม") + 0.3, "x": 540, "y": 470, "size": 70, "bg": "#FE4C1C"}])
+seg(P(11), P(12), "full", zoom=1.1, badges=[{"text": "labs.google/pomelli", "at": P(11) + 0.4, "x": 480, "y": 380, "size": 64, "bg": "#1A1B1E", "rot": -0.04}])
+seg(P(12), DUR, "full", zoom=1.0, logos=[{"img": "logo", "at": P(13), "x": 540, "y": 300, "h": 230, "plain": True}],
+    badges=[{"text": "กดติดตาม", "at": T("กดติดตาม") + 0.3, "x": 540, "y": 500, "size": 70, "bg": "#FE4C1C"}])
 for a, b in zip(S, S[1:]): assert abs(a["t1"] - b["t0"]) < 1e-6 and b["t0"] > a["t0"], (a, b)
 
 F = json.loads((here / "assets/face.json").read_text())

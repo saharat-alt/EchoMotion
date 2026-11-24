@@ -117,7 +117,11 @@
   "white": "logo/DataEchooo-logo-WH.png",
   "square": "logo/Primary_Square.png",
   "long": "logo/Logo-DE-long.png",
-  "svg_black": "logo/DataEchooo-logo-BL.svg"
+  "svg_black": "logo/DataEchooo-logo-BL.svg",
+  "circle": "logo/Primary_DataEchooo.png",
+  "watermark": {"file": "logo/DataEchooo-logo-WH.png", "x": 900, "y": 240, "w": 140, "opacity": 0.75, "shadow": true,
+                "note": "user 2026-11-24: logo 1 as a watermark on every clip in the same place (top-right, under the platform top bar); hidden on the end card"},
+  "end_card": "logo/Primary_DataEchooo.png"
  },
  "motif": "three sound-wave arcs (the 'ooo' in Echooo) -> ripple wipe transition and end-card sting",
  "voice_th": "เป็นกันเอง เข้าใจง่าย มีข้อมูลรองรับ ใช้คำอังกฤษสายเทคได้ตามธรรมชาติ (AI, Data, Insight) อีโมจิได้ในแคปชันโพสต์ ไม่ใช้ในวิดีโอ",

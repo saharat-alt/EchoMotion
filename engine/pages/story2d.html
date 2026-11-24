@@ -14,7 +14,7 @@ canvas{position:absolute;left:0;top:0}</style></head>
 // #214AFF as the main colour, sky/teal accents, one orange touch. Earlier dark-navy look: orange lamps (#FE4C1C),
 // teal screens (#00C2BB), cream text (#FFF8EC), brand-blue tags, Data Echooo logo bug, brand fonts.
 // Everything is a pure function of t (deterministic render).
-let D, g, cap, imgs = {}, logo;
+let D, g, cap, imgs = {}, logo, logoWh;
 const W = 1080, H = 1920, CREAM = '#FFF8EC', BLUE = DE.color.blue, TEAL = DE.color.teal, ORANGE = DE.color.orange;
 const J = (p) => p.startsWith('brand:') ? D.brandBase + '/' + p.slice(6) : D.jobBase + '/' + p;
 const E = TOON.ease, clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x)), lerp = (a, b, k) => a + (b - a) * k;
@@ -24,7 +24,7 @@ window.setup = async (data) => {
   D = data; g = document.getElementById('c').getContext('2d');
   await DE.injectFonts(D.brandBase);
   for (const [k, p] of Object.entries(D.plates)) imgs[k] = await DE.loadImage(J(p));
-  logo = await DE.loadImage(J('brand:logo/DataEchooo-logo.png'));
+  logo = await DE.loadImage(J('brand:logo/DataEchooo-logo.png')); try { logoWh = await DE.loadImage(J('brand:logo/Primary_DataEchooo.png')); } catch (e) { logoWh = null; }   // end card = logo 2 (blue circle), user 2026-11-24
   cap = new DE.Captions(document.body, D.captions, Object.assign({ y: D.capY || 1400, size: 60, maxWidth: 960 }, D.captionStyle || {}));  // captionStyle {mode:'soft'} = lighter captions (REF_SPEC 37)
   await loadLayered(D.shots);
   for (const s of D.shots) for (const ph of s.photos || []) if (!PIMG[ph.img]) PIMG[ph.img] = await DE.loadImage(J(ph.img));
@@ -140,12 +140,16 @@ Object.assign(PROPS, {
 });
 
 function cta(o, t, t0) {  // end card: brand grid, logo, follow button, mascot pinned to the bottom edge
+  if (D.ctaDark && imgs[D.ctaDark]) {   // end card in the same mood as the sets (blurred, dark plate), white logo
+    g.save(); g.filter = 'blur(16px) brightness(.45)'; g.drawImage(imgs[D.ctaDark], -40, -60, W + 80, H + 120); g.restore(); g.filter = 'none';
+  } else {
   g.fillStyle = DE.color.ice; g.fillRect(0, 0, W, H);
   g.strokeStyle = 'rgba(33,74,255,.07)'; g.lineWidth = 1;
   for (let x = 0; x <= W; x += 60) { g.beginPath(); g.moveTo(x + 0.5, 0); g.lineTo(x + 0.5, H); g.stroke(); }
   for (let y = 0; y <= H; y += 60) { g.beginPath(); g.moveTo(0, y + 0.5); g.lineTo(W, y + 0.5); g.stroke(); }
+  }
   const k = E((t - t0) / 0.5);
-  const lw = 480, lh = lw * logo.height / logo.width, ly = 330; g.globalAlpha = k; g.drawImage(logo, (W - lw) / 2, ly - 30 * (1 - k), lw, lh);
+  const LG = logoWh || logo, lw = logoWh ? 400 : 480, lh = lw * LG.height / LG.width, ly = 330; g.globalAlpha = k; g.drawImage(LG, (W - lw) / 2, ly - 30 * (1 - k), lw, lh);
   // the story's own cast waves goodbye (the Data Echooo mascot belongs to the news format only)
   for (const a of o.actors || []) TOON.draw(g, TOON.cast[a.who], Object.assign({ t, blink: TOON.blink(t, TOON.cast[a.who].seed), rim: { color: '#FFFFFF', side: 1, a: 0.55 } }, a, { y: a.y + 60 * (1 - k) }));
   const b = E((t - t0 - 0.4) / 0.4), pulse = 1 + 0.04 * Math.sin((t - t0) * 6);
@@ -284,7 +288,7 @@ function paperCard(o, t, t0, t1) {
   g.restore();
 }
 // warm paper look (REF_SPEC 47, ref princegupta.ai Jensen reel): warm multiply tint + fixed paper grain (seeded, same every frame)
-let GRAIN = null, FOC = null;
+let GRAIN = null, FOC = null, LAY = null;
 function paperGrade() {
   if (!GRAIN) { GRAIN = document.createElement('canvas'); GRAIN.width = W; GRAIN.height = H; const q = GRAIN.getContext('2d'), r = DE.seeded(31), id = q.createImageData(W, H);
     for (let i = 0; i < id.data.length; i += 4) { const v = 128 + (r() - 0.5) * 70; id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 255; }
@@ -351,7 +355,9 @@ function photo(o, t) {
 //   shot.rewind: flashback with a rolling year counter; shot.card.title: chapter title; links: diagram line.
 
 function rewind(o, t, t0, t1) {  // speed lines rushing out from the centre + year counter rolling back
-  g.fillStyle = BLUE; g.fillRect(0, 0, W, H);
+  // o.plate: the flashback runs over that set, blurred and dark, instead of a flat brand-blue card (REF_SPEC 37 flat blue cards, 67 mood of the sets)
+  if (o.plate && imgs[o.plate]) { g.save(); g.filter = 'blur(16px) brightness(.45)'; g.drawImage(imgs[o.plate], -40, -60, W + 80, H + 120); g.restore(); g.filter = 'none'; }
+  else { g.fillStyle = BLUE; g.fillRect(0, 0, W, H); }
   const k = clamp((t - t0) / (t1 - t0)), r = DE.seeded(7);
   g.save(); g.translate(W / 2, H * 0.47);
   for (let i = 0; i < 90; i++) {
@@ -465,13 +471,21 @@ function drawShot(s, t) {  // draws one shot at time t into the current g
   g.save(); g.translate(W / 2, H / 2); g.scale(z, z); g.translate(-fx, -fy);
   g.drawImage(imgs[s.plate], 0, 0, W, H);
   const follow = (p) => { if (p.follow === undefined) return p; const st = actorAt(s.actors[p.follow], t); return Object.assign({}, p, { x: st.x + (p.dx || 0), y: st.y + (p.dy || 0) }); };
+  // cast + drawn props are graded toward the muted photoreal sets (REF_SPEC 67: "มู้ดโทนมันแปลกๆ"). They are drawn on a spare layer and
+  // graded in ONE blit: a canvas filter on every shape made a 50-person crowd shot take minutes per frame.
+  const graded = (fn) => { if (!D.toonGrade) { fn(); return; }
+    if (!LAY) { LAY = document.createElement('canvas'); LAY.width = W; LAY.height = H; }
+    const q = LAY.getContext('2d'), main = g; q.setTransform(1, 0, 0, 1, 0, 0); q.clearRect(0, 0, W, H); q.setTransform(main.getTransform());
+    g = q; try { fn(); } finally { g = main; }
+    main.save(); main.setTransform(1, 0, 0, 1, 0, 0); main.filter = D.toonGrade; main.drawImage(LAY, 0, 0); main.filter = 'none'; main.restore(); };
+  graded(() => {
   for (const p of s.props || []) if (!p.front && t >= (p.at || 0) - 0.01) PROPS[p.kind](follow(p), t, s);
   for (const a of s.actors || []) {
     const st = actorAt(a, t); const spec = TOON.cast[a.who];
     TOON.draw(g, spec, Object.assign({}, st, { t, blink: TOON.blink(t, spec.seed), rim: s.rim || { color: '#FFFFFF', side: st.rimSide ?? 1, a: 0.55 } }));
-  }
+  } });
   if (s.fg) { const y0 = s.fg.y; g.drawImage(imgs[s.plate], 0, y0, W, H - y0, 0, y0, W, H - y0); }
-  for (const p of s.props || []) if (p.front && t >= (p.at || 0) - 0.01) PROPS[p.kind](follow(p), t, s);
+  if ((s.props || []).some((p) => p.front)) graded(() => { for (const p of s.props || []) if (p.front && t >= (p.at || 0) - 0.01) PROPS[p.kind](follow(p), t, s); });
   g.restore();
   const vg = g.createRadialGradient(W / 2, H * 0.48, H * 0.28, W / 2, H * 0.5, H * 0.75); vg.addColorStop(0, 'rgba(33,74,255,0)'); vg.addColorStop(1, 'rgba(33,74,255,.10)');
   g.fillStyle = vg; g.fillRect(0, 0, W, H);

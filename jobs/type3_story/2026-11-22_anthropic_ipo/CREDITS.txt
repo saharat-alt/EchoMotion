@@ -4,3 +4,6 @@ nasdaq: File:Nasdaq MarketSite (51494550508).jpg — ajay_suresh — CC BY 2.0 �
 antlogo: File:Anthropic logo.svg — Anthropic — Public domain — https://commons.wikimedia.org/wiki/File%3AAnthropic_logo.svg
 News pages (screenshots, fair use with on-screen credit): NPR/STLPR 19 Nov 2026 (photo AFP via Getty Images), Al Jazeera 19 Nov 2026, Fox Business 19 Nov 2026, anthropic.com/news/introducing-claude (14 Mar 2023)
 Logos: OpenAI, Claude (library/logos, official)
+
+Music (v7 bed, until the Envato pick is approved): "Investigations" by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 4.0 https://creativecommons.org/licenses/by/4.0/ . The credit line must be in the post caption (REF_SPEC 32).
+SFX: earshot (library/audio/sfx_earshot), cue list and refs in make_cues_v7.py.

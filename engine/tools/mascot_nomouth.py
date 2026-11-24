@@ -21,8 +21,11 @@ for name, p in R["poses"].items():
     mask = ((diff > 70) & (region > 0) & (a > 200)).astype(np.uint8) * 255
     # keep hands/fingers that reach into the region (big components touching its edge are not the mouth)
     n, lab, st, _ = cv2.connectedComponentsWithStats(mask, 8)
+    # 2026-11-24 (EP03 v7 QA at full size): a dark line that leaves the search region is not the mouth. The old mask also
+    # painted out the piece of the chin outline, the lower glasses rim and the chin-pose finger inside the ellipse (broken lines).
+    edge = cv2.subtract(region, cv2.erode(region, np.ones((5, 5), np.uint8)))
     for i in range(1, n):
-        if st[i, cv2.CC_STAT_AREA] > 4000: mask[lab == i] = 0
+        if st[i, cv2.CC_STAT_AREA] > 4000 or (edge[lab == i] > 0).any(): mask[lab == i] = 0
     mask = cv2.dilate(mask, np.ones((7, 7), np.uint8))
     out = cv2.inpaint(bgr, mask, 9, cv2.INPAINT_TELEA)
     out = cv2.GaussianBlur(out, (0, 0), 1.2) * (cv2.GaussianBlur(mask, (0, 0), 3)[..., None] / 255.0) + out * (1 - cv2.GaussianBlur(mask, (0, 0), 3)[..., None] / 255.0)

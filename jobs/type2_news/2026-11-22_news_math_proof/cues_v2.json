@@ -61,36 +61,25 @@
   "align": "peak"
  },
  {
-  "t": 36.0,
+  "t": 35.96,
   "sfx": "sweep",
   "db": -16,
   "align": "peak"
  },
  {
-  "t": 44.35,
-  "sfx": "keytick",
-  "db": -10
- },
- {
-  "t": 54.71,
+  "t": 40.21,
   "sfx": "sweep",
   "db": -16,
   "align": "peak"
  },
  {
-  "t": 58.96,
-  "sfx": "sweep",
-  "db": -16,
-  "align": "peak"
- },
- {
-  "t": 63.64,
+  "t": 44.89,
   "sfx": "logohit",
   "db": -8,
   "align": "peak"
  },
  {
-  "t": 63.79,
+  "t": 45.04,
   "sfx": "thump",
   "db": -6
  }
