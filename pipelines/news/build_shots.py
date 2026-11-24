@@ -41,6 +41,8 @@ scene = {
     "captions": caps, "shots": shots, "flashes": plan.get("flashes", []), "desks": plan.get("desks"), "grid": plan.get("grid"), "deskDim": plan.get("deskDim"),
     "mascot": dict(plan.get("mascot", {}), env=envelope(job / "input/voice.wav", fps=30)),
 }
+for k in ("look", "captionStyle"):   # page styling straight from the plan (no hand edit of the scene afterwards)
+    if k in plan: scene[k] = plan[k]
 (job / "scene_v3.json").write_text(json.dumps(scene, ensure_ascii=False, indent=1), encoding="utf-8")
 lens = [round(s["t1"] - s["t0"], 2) for s in shots]
 print(f"{len(shots)} shots, len min/avg/max = {min(lens)}/{sum(lens)/len(lens):.2f}/{max(lens)} s; {len(caps)} caption chunks; duration {scene['duration']}")

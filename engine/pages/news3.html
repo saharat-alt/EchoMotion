@@ -19,6 +19,15 @@
   .hl{position:absolute;background:#FFE14D;mix-blend-mode:multiply;transform-origin:0 50%}
   .src{position:absolute;left:60px;top:250px;font:700 28px DEBody;color:#111;background:#FFF8EC;padding:6px 18px;z-index:35;box-shadow:0 4px 10px rgba(0,0,0,.18)}
   .sect{position:absolute;right:60px;top:250px;font:800 32px DEHead;color:#FFF8EC;background:#111;padding:6px 20px 9px;z-index:35}
+  /* look 'minimal' (user 2026-11-24, Pinterest ref A "Swiss light minimal"): flat light backgrounds that change per section,
+     clean rounded white cards with soft long shadows, no torn edges, no tape, no tilt, no grain */
+  body.min #grain,body.min .tape{display:none}
+  body.min .kl{background:#fff;border-radius:26px;padding:14px;box-shadow:0 34px 70px rgba(20,24,40,.14),0 3px 8px rgba(20,24,40,.06)}
+  body.min .kl img{border-radius:14px}
+  body.min .card{border-radius:24px;box-shadow:0 26px 50px rgba(20,24,40,.14),0 2px 6px rgba(20,24,40,.06)}
+  body.min .num{background:none!important;color:#111!important;box-shadow:none;text-shadow:0 26px 60px rgba(254,76,28,.35)}
+  body.min .src{border-radius:30px;background:rgba(255,255,255,.85);box-shadow:none;font-weight:600;color:#555}
+  body.min .hl{border-radius:6px}
 </style></head>
 <body>
 <canvas id="grid" width="1080" height="1920" style="position:absolute;left:0;top:0;z-index:1;pointer-events:none"></canvas>
@@ -34,10 +43,12 @@ let D, cap, mascot, shots = [], fxG, docs, seed = 11;
 const J = (p) => D.jobBase + '/' + p;
 const ht = {};  // halftone cache by src
 
+const PAPER = ['#FFF8EC', '#F1E6D2', '#fff8ec', '#f1e6d2'];   // minimal look: cream/beige paper cards become plain white
 async function piece(p) {
+  if (D.look === 'minimal' && (p.k === 'card' || p.k === 'num') && (!p.bg || PAPER.includes(p.bg))) p = Object.assign({}, p, { bg: '#FFFFFF' });
   const el = document.createElement('div'); el.className = 'pc'; el.dataset.at = p.at ?? 0;
   el.style.left = p.x + 'px'; el.style.top = p.y + 'px'; if (p.w) el.style.width = p.w + 'px';
-  el._p = p; const torn = p.torn !== false ? CL.torn(seed++, 1.4) : 'none';
+  el._p = p; const torn = p.torn !== false && D.look !== 'minimal' ? CL.torn(seed++, 1.4) : 'none';
   if (p.k === 'photo') {
     let src = p.img.startsWith('brand:') ? D.brandBase + '/' + p.img.slice(6) : J(p.img);
     if (p.halftone) { if (!ht[src]) { const im = await DE.loadImage(src); ht[src] = CL.halftone(im, { w: Math.round(p.w * 1.2), cell: p.cell || 8 }); } src = ht[src]; }
@@ -82,7 +93,7 @@ async function build(s) {
 }
 
 window.setup = async (data) => {
-  D = data; docs = D.docs;
+  D = data; docs = D.docs; if (D.look === 'minimal') document.body.classList.add('min');
   await DE.injectFonts(D.brandBase);
   document.getElementById('grain').style.backgroundImage = `url(${CL.grain()})`;
   const imgs = D.mascot && D.mascot.visemes ? await DE.loadMascotRig(D.brandBase) : await DE.loadMascot(D.brandBase);
@@ -106,7 +117,10 @@ function drawGrid(t) {
   let tint = G.tints[0]; for (const x of G.tints) if (t >= x.t) tint = x;
   g.clearRect(0, 0, 1080, 1920);
   if (tint.bg) { g.fillStyle = tint.bg; g.fillRect(0, 0, 1080, 1920); }
-  const step = 60, ox = (t * 4) % step, oy = (t * 7) % step;   // slow drift, never static, never busy
+  if (tint.glow) { const rg = g.createRadialGradient(540, 760, 40, 540, 760, 1100); rg.addColorStop(0, tint.glow); rg.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = rg; g.fillRect(0, 0, 1080, 1920); }
+  const step = tint.step || 60, ox = (t * 4) % step, oy = (t * 7) % step;   // slow drift, never static, never busy
+  if (tint.pattern === 'none') return;
+  if (tint.pattern === 'dots') { g.fillStyle = tint.line; for (let x = -step + ox; x < 1080 + step; x += step) for (let y = -step + oy; y < 1920 + step; y += step) { g.beginPath(); g.arc(x, y, tint.r || 2.2, 0, 7); g.fill(); } return; }
   g.lineWidth = tint.w || 2; g.strokeStyle = tint.line;
   for (let x = -step + ox; x < 1080 + step; x += step) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, 1920); g.stroke(); }
   for (let y = -step + oy; y < 1920 + step; y += step) { g.beginPath(); g.moveTo(0, y); g.lineTo(1080, y); g.stroke(); }
@@ -135,7 +149,7 @@ window.renderAt = async (t) => {
     for (const e of pcs) {
       const p = e._p, a = CL.arrive(dt - (p.at ?? 0), p.from || 'bottom');
       e.style.opacity = a.o;
-      e.style.transform = `translate(${a.x}px,${a.y}px) rotate(${(p.rot || 0) + a.r}deg) scale(${a.s})`;
+      e.style.transform = `translate(${a.x}px,${a.y}px) rotate(${(D.look === 'minimal' ? 0 : (p.rot || 0)) + a.r}deg) scale(${a.s})`;
       e.querySelectorAll('[data-hl]').forEach((h) => { h.style.transform = `scaleX(${DE.ease.outCubic(DE.clamp((dt - parseFloat(h.dataset.hl)) / 0.35))})`; });
       e.querySelectorAll('[data-num]').forEach((n) => { n.textContent = n.dataset.pre + CL.count(parseFloat(n.dataset.num), dt - (p.at ?? 0) - 0.15, 0.7, +n.dataset.dec) + n.dataset.suf; });
     }

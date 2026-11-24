@@ -24,7 +24,8 @@ CAP = """โจทย์เลขที่ไม่มีใคร / แก้�
 สอง Kevin Buzzard บอกว่า / เรายังไม่รู้เลยว่ามันจริงเพราะอะไร
 สาม Andrew Sutherland / จาก MIT ที่ลองรันโค้ดเอง / บอกว่า / นี่คือชัยชนะของมนุษย์
 ตอนนี้ยังไม่ได้ / เงินรางวัลนะ / ต้องรอคนในวงการยอมรับอย่างน้อย 2 ปี
-คิดว่าใครควรได้เครดิต AI หรือคน / คอมเมนต์บอกหน่อยครับ"""
+คิดว่าใครควรได้เครดิต AI หรือคน / คอมเมนต์บอกหน่อยครับ
+อย่าลืมกดติดตาม Data Echooo / ไว้ด้วยนะครับ"""
 (here / "caption_script.txt").write_text(CAP, encoding="utf-8")
 
 X, W = 90, 900        # everything centred in the middle band (REF_SPEC 48); the mascot owns the bottom-right corner
@@ -78,14 +79,16 @@ shot(S(13), S(14), [card("“to me this is a human triumph, and a day for celebr
      src="Scientific American 20 พ.ย. 2026", sfx="whoosh")
 # where it stands + CTA
 shot(S(14), S(15), [ill("assets/ill/wait_2y.png", w=1000, y=380, rot=-1)], src="claymath.org")
-shot(S(15), END, [card("AI <span style='color:#FE4C1C'>หรือ</span> คน?", y=480, size=120, rot=-3)], sfx="chime")
+shot(S(15), END, [card("AI <span style='color:#FE4C1C'>หรือ</span> คน?", y=300, size=120, rot=-3),   # follow line (user 2026-11-24: "อย่าลืมกดติดตาม Data Echooo ... พูดไวๆ")
+                   photo("brand:logo/DataEchooo-logo.png", w=340, y=560, at=round(S(17) + 0.8 - S(15), 2), rot=0),
+                   card("<div style='text-align:center'>กดติดตาม</div>", y=930, at=round(S(17) + 1.0 - S(15), 2), size=58, bg="#111", ink="#FFFFFF", w=380)], sfx="chime")
 
 # ---- mascot: gesture every 2-4 s on the word, centre host on the bridge and the CTA
 POSES = [(0, "wow"), (S(1), "shrug"), (S(2), "point_up"), (S(3), "explain"), (S(4), "point_side"), (S(5), "ok"), (S(6), "point_side"), (S(6) + 2.6, "hold_card"),
          (S(7), "wow"), (S(8), "phone"), (S(9), "point_side"), (S(10), "explain"), (S(11), "count_1"), (S(12), "count_2"), (S(13), "count_3"),
-         (S(14), "chin"), (S(15), "arms_crossed"), (S(16), "bye")]
-moves = [{"t": S(10) - 0.2, "x": 540, "y": 2050, "scale": 0.86}, {"t": S(11) - 0.1, "x": 830, "y": 2010, "scale": 0.56},
-         {"t": S(15) - 0.2, "x": 540, "y": 2050, "scale": 0.86}]
+         (S(14), "chin"), (S(15), "arms_crossed"), (S(16), "point_up"), (S(17), "bye")]
+moves = [{"t": S(10) - 0.2, "x": 540, "y": 2110, "scale": 0.74}, {"t": S(11) - 0.1, "x": 830, "y": 2010, "scale": 0.56},
+         {"t": S(15) - 0.2, "x": 540, "y": 2110, "scale": 0.74}]
 
 # ---- visemes from the timed Thai text: each Whisper token's characters spread over its time, vowel/consonant -> mouth shape
 V_OF = {}
@@ -119,10 +122,21 @@ plan = {"page": "engine/pages/news3.html", "caption_script": "@caption_script.tx
         "desks": [], "shots": shots,
         "mascot": {"poses": [{"t": round(t, 2), "pose": p} for t, p in POSES], "emotes": [{"t": 0.3, "type": "hop"}, {"t": S(7) + 0.2, "type": "hop"}],
                    "moves": moves, "visemes": clean}}
-plates = [("m01_hook", 0, S(2)), ("m02_primes", S(2), S(4)), ("m03_prize", S(4), S(5)), ("m04_person", S(5), S(7)), ("m05_pages", S(7), S(9)),
-          ("m06_water", S(9), S(10)), ("m07_quotes", S(10), S(14)), ("m08_wait", S(14), END)]
-for img, a, b in plates:
-    plan["desks"].append({"img": f"assets/plates/{img}.png", "t0": round(a, 2), "t1": round(b, 2) if b != END else 1e9,
-                          "keys": [{"t": a, "x": 0, "y": 0, "s": 1.06}, {"t": b, "x": 0, "y": 0, "s": 1.12}]})
+# v3 look (user 2026-11-24: "ไม่อยากได้แบบเป็นกระดาษเลย", picked Pinterest ref A "light minimal", "อยากให้มันสลับๆ กัน ไม่ใช่อันเดียวทั้งคลิป"):
+# no desk plates; a flat light background that changes per section (grid / dots / plain + light), brand orange only for the CTA
+G = lambda **k: dict(k)
+SECT = [(0, G(bg="#E8E8E5", line="rgba(17,17,17,.05)", step=60, glow="rgba(255,255,255,.85)")),       # hook
+        (S(2), G(bg="#F5F5F2", line="rgba(17,17,17,.11)", pattern="dots", step=34)),                   # primes
+        (S(4), G(bg="#E4EAF7", pattern="none", glow="rgba(255,255,255,.95)")),                          # 1 of 7, $1M
+        (S(5), G(bg="#ECEBE8", line="rgba(17,17,17,.045)", step=90, glow="rgba(255,255,255,.7)")),     # who
+        (S(7), G(bg="#F2F2EF", line="rgba(33,74,255,.16)", pattern="dots", step=40)),                  # 250,000 pages, computer check
+        (S(9), G(bg="#E1E8F5", line="rgba(33,74,255,.07)", step=60, glow="rgba(255,255,255,.9)")),     # water
+        (S(10), G(bg="#EAEAE7", pattern="none", glow="rgba(255,255,255,.95)")),                         # three voices
+        (S(14), G(bg="#F4F4F1", line="rgba(17,17,17,.10)", pattern="dots", step=34)),                  # 2-year wait
+        (S(15), G(bg="#FE4C1C", pattern="none", glow="rgba(255,150,110,.55)"))]                         # CTA
+plan["grid"] = {"tints": [dict(v, t=round(t, 2)) for t, v in SECT]}
+plan["desks"] = []
+plan["look"] = "minimal"
+plan["captionStyle"] = {"mode": "clean", "size": 54, "halo": True}
 (here / "plan_v2.json").write_text(json.dumps(plan, ensure_ascii=False, indent=1), encoding="utf-8")
 print(f"{len(shots)} shots, {len(clean)} viseme keys, {len(POSES)} gestures, end {END}")
